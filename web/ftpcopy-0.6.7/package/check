@@ -1,0 +1,53 @@
+#! /bin/sh
+
+package/packagecheck || exit 1
+
+# The package self check needs:
+# a) the publicfile ftpd           http://cr.yp.to/publicfile.html
+# b) daemontools                   http://cr.yp.to/daemontools.html
+# c) ucspi-tcp (for publicfile)    http://cr.yp.to/ucspi-tcp.html
+
+ok=0
+
+# need publicfile daemontools ucspi-tcp
+
+# /usr/local/publicfile/bin/: as djb intended it.
+# /usr/bin/:                  gentoo linux
+# /usr/local/bin/:            FreeBSD port
+for i in /usr/local/publicfile/bin/ /usr/bin/ /usr/local/bin/ ; do
+  $i/ftpd 1 2 3 4 5 6 7 8 9 10 2>/dev/null >/dev/null                     
+  if test "$?" = 20 ; then                                                
+    ok=1                                                            
+    PUBLICFILE_FTPD=$i/ftpd                                         
+    export PUBLICFILE_FTPD                                          
+    break                                                           
+  fi                
+done
+if test "$ok" = 0 ; then                                                       
+  fail="publicfile"  
+fi
+
+# check for daemontools
+svc 2>/dev/null >/dev/null
+if test "$?" = 0 ; then 
+	:
+else
+	ok=0;
+	fail="$fail daemontools"
+fi
+
+# check for ucspi-tcp
+tcpserver 2>/dev/null >/dev/null
+if test "$?" = 100 ; then 
+	:
+else
+	ok=0;
+	fail="$fail ucspi-tcp"
+fi
+
+if test "x$ok" = x0 ; then
+	echo "Check not done: missing $fail" >&2
+	exit 0
+fi
+cd compile || exit 1
+exec make check

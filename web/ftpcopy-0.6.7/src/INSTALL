@@ -1,0 +1,152 @@
+ftpcopyinstall(8)				ftpcopyinstall(8)
+
+
+
+How to install ftpcopy
+       This document describes how to download, compile, test and
+       install ftpcopy.
+
+
+   System requirements:
+       The ftpcopy  package  is	 meant	to  run	 under	UNIX  and
+       -lookalikes.
+
+       If you want to run the self check you'll have to install a
+       few additional software packages	 (see  below),	but  they
+       aren't needed to run ftpcopy.
+
+
+
+   Create a /package directory:
+	 $ mkdir /package
+	 $ chmod 1755 /package
+	 $ cd /package
+       You  may	 use another directory. No program in the ftpcopy
+       package	cares  where  it  is   installed.   /package   is
+       recommended.
+
+       The latest published ftpcopy package is:
+
+       http://www.ohse.de/uwe/ftpcopy/ftpcopy-0.6.7.tar.gz
+
+       You can alternatively download it through FTP:
+
+       ftp://www.ohse.de/uwe/ftpcopy/ftpcopy-0.6.7.tar.gz
+
+
+
+   Unpack the package:
+	 $ gunzip ftpcopy-0.6.7.tar.gz
+	 $ tar -xpf ftpcopy-0.6.7.tar
+	 $ rm ftpcopy-0.6.7.tar
+	 $ cd web/ftpcopy-0.6.7
+
+
+   Compile and install the programs:
+	 $ package/install
+
+
+   Where commands and documentation are installed:
+       By    default	the    binaries	   are	  installed    in
+       /package/web/ftpcopy-0.6.7/commmand.   (replace	/package/
+       by  the	directory  where  you  you  unpacked  the ftpcopy
+       distribution in).  Symbolic  links  to  the  commands  are
+       created	in  /command/  and, for compatibility reasons, in
+       /usr/local/bin.
+       Manual	     pages	  are	     installed	       in
+       /package/web/ftpcopy-0.6.7/doc.	 Symbolic  links  to  the
+       manual pages are created under /usr/local/man.
+
+       If you don't like this then:
+	 $ package/compile && package/check
+	 $ cp command/* /whereever/you/want/bin
+	 $ cp doc/* /whereever/you/want/doc
+
+
+
+   Self check:
+       compile/install	(or  compile/check)  try  to   run   some
+       automated  tests is a few additional software packages are
+       available. If these tests fail the software  will  not  be
+       install.	 If  some  or  all of the needed packages are not
+       found in $PATH then ftpcopy will be installed.
+
+
+
+   Packages needed to run the self test:
+       publicfile
+	      The self check needs a ftp server. The  ftp  server
+	      included in the publicfile package doesn't need any
+	      special  entries	in  /etc/passwd	 and  is   highly
+	      secure.
+
+	      The  self check expects to find the publicfile ftpd
+	      in /usr/local/publicfile/bin/ftpd. If you, for  any
+	      reason,	want   to  run	the  test  manually,  and
+	      publicfile is installed somewhere else, for example
+	      in /usr/bin, you may run
+		make PUBLICFILE_FTPD=/usr/bin/ftpd check
+	      in the compile directory.
+
+	      See http://cr.yp.to/publicfile.html.
+
+
+       ucspi-tcp
+	      The  tcpserver  program  is needed to open a socket
+	      (127.0.0.1, port 50000) and to run  the  publicfile
+	      ftp server program.
+
+	      See http://cr.yp.to/ucspi-tcp.html.
+
+
+       daemontools
+	      The  supervise  program  is  used to start and stop
+	      tcpserver.
+
+	      See http://cr.yp.to/daemontools.html.
+
+       The tests take some time. Things are fine if they  do  not
+       print anything.
+
+
+   How to report success: (not mandatory)
+	 $ mail uwe-generic-counter@ohse.de <compile/auto-systype
+
+       Please  do  not	send this email if the self-check failed.
+       Send an problem report to the mailing list instead.
+
+
+
+   Cleaning up:
+       If you are short on disk space you may remove the  compile
+       and src directories:
+	 $ rm -rf compile src
+
+
+
+   Mailing list:
+       To  subscribe  to  the ftpcopy mailing list send a mail to
+       ftpcopy-subscribe@lists.ohse.de. The content is ignored.
+
+       You do not need to subscribe to the mailing list, it is an
+       open  one.   But,  if you are not subscribe, make sure you
+       mention this in the mail.
+
+       Please include the ftpcopy version number,  the	operating
+       system  and  it's version and any possible relevant output
+       of the  failing	program.   Please  include  compile/auto-
+       systype in your posting.
+
+       If your system is a GNU/Linux one then please include name
+       and version  of	your  distribution  and	 your  C  library
+       version number (as printed by ldd --version).
+
+
+
+SEE ALSO
+       The homepage may be more up-to-date, see
+       http://www.ohse.de/uwe/ftpcopy.html.
+
+
+
+ftpcopy			      0.6.7		ftpcopyinstall(8)

@@ -1,0 +1,45 @@
+If you miss your name in this list please send me a note.
+
+Matthias Andree <matthias.andree@stud.uni-dortmund.de>,
+                <matthias.andree@gmx.de>: 
+  multiple bug reports and fixes.
+Antonio Dias <accdias@sst.com.br>:
+  Found / patched the typo in bailout_name.c.
+Nagy Erno <ned@elte.hu>:
+  Multiple bug fixes.
+Mike Jackson <jacksonm@ssh.com>:
+  Brought the socks problem to my attention.
+"Brian J. Kifiak" <bk@rt.fm>:
+  Reported the missing first character bug due to the typo in bailout_name.c.
+Felix von Leitner <leitner@fefe.de>:
+  Multiple bug reports and fixes.
+Frank Liu <liug@mama.indstate.edu>:
+  Noticed a listing format ftpcopy didn't understand. Also noticed 
+  first character bug.
+Jim Thompson <jim@smallworks.com>:
+  Found a manual page typo.
+Rory Savageau <rory@ltu.edu>:
+  Found an initial entity problem.
+Michael Schwendt <mschwendt@yahoo.com>:
+  Made me implement --mdtm.
+Support <support@chsoft.com>:
+  Reminded me to make the timeout configurable.
+Lars Timmann <Lars@Timmann.de>:
+  Needed ACCT handling which i never saw a use for before.
+Jacco Ligthart <jacco@ligthart.net>:
+  Needed switch to ignore time stamps.
+A. Phil Garcia <apgarcia@uwm.edu>:
+  Found a FTP server closing the data connection too early, triggering
+  a bug in ftpcopy.
+  Found a FTP server refusing to provide a listing, thereby being reported
+  a wrong error message from ftpcopy.
+Nick Kralevich <nick@kralevich.com>:
+  noted that --dry-run doesn't show which files will be deleted.
+Noah Williamsson <noah@hd.se>:
+  gmtoff and setenv are not portable, indeed.
+Janos Farkas <chexum@shadow.banki.hu>:
+  gmtoff is not portable.
+  missing semicolon in shell script (Makefile).
+  noted the malformed MLSx response problem.
+Stephen Satchell <satch@fluent2.pyramid.net>: 
+  also noted the malformed MLSx response problem.

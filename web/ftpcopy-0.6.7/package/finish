@@ -1,0 +1,4 @@
+test -d "command/." || mkdir "command"
+cp "compile/ftpls" "./command/" || exit 1
+cp "compile/ftpcp" "./command/" || exit 1
+cp "compile/ftpcopy" "./command/" || exit 1

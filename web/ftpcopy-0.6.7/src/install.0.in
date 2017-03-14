@@ -1,0 +1,157 @@
+.TH ftpcopyinstall 8 \*(VE \*(PA
+.hy 0
+.URL "Uwe Ohse" ../uwe.html
+.br
+.URL "The ftpcopy package" ../ftpcopy.html
+.paragraph
+.section "How to install ftpcopy"
+.paragraph
+This document describes how to download, compile, test and install ftpcopy.
+.LINE
+.subsection "System requirements:"
+The ftpcopy package is meant to run under UNIX and -lookalikes.
+.paragraph
+If you want to run the self check you'll have to install a few additional
+software packages (see below), but they aren't needed to run
+ftpcopy.
+.paragraph
+.LINE
+.subsection "Create a /package directory:"
+.nf
+.HTML <pre>
+  $ mkdir /package
+  $ chmod 1755 /package
+  $ cd /package
+.HTML </pre>
+.fi
+You may use another directory. No program in the ftpcopy package cares
+where it is installed. /package is recommended.
+.paragraph
+.LINE
+.subscection "Download ftpcopy:"
+The latest published ftpcopy package is:
+.paragraph
+.extlink http://www.ohse.de/uwe/\*(PA/\*(PA-\*(VE.tar.gz \*(PA-\*(VE.tar.gz
+.paragraph
+You can alternatively download it through FTP:
+.paragraph
+.extlink ftp://www.ohse.de/uwe/\*(PA/\*(PA-\*(VE.tar.gz \*(PA-\*(VE.tar.gz
+.paragraph
+.LINE
+.subsection "Unpack the package:"
+.nf
+.HTML <pre>
+  $ gunzip \*(PA-\*(VE.tar.gz 
+  $ tar -xpf \*(PA-\*(VE.tar
+  $ rm \*(PA-\*(VE.tar
+  $ cd \*(CL/\*(PA-\*(VE
+.HTML </pre>
+.fi
+.LINE
+.subsection "Compile and install the programs:"
+.nf
+.HTML <pre>
+  $ package/install
+.HTML </pre>
+.fi
+.subsection "Where commands and documentation are installed:"
+By default the binaries are installed in \fB/package/\*(CL/\*(PA-\*(VE/commmand\fR.
+(replace /package/ by the directory where you you unpacked the ftpcopy 
+distribution in). Symbolic links to the commands are created in 
+\fB/command/\fR and, for compatibility reasons, in \fB/usr/local/bin\fR.
+.br
+Manual pages are installed in \fB/package/\*(CL/\*(PA-\*(VE/doc\fR. Symbolic
+links to the manual pages are created under \fB/usr/local/man\fR.
+.paragraph
+If you don't like this then:
+.nf
+.HTML <pre>
+  $ package/compile && package/check
+  $ cp command/* /whereever/you/want/bin
+  $ cp doc/* /whereever/you/want/doc
+.HTML </pre>
+.fi
+.paragraph
+.subsection "Self check:"
+\fBcompile/install\fR (or \fBcompile/check\fR) try to run some automated 
+tests is a few additional software packages are available. If these
+tests fail the software will not be install. If some or all of the
+needed packages are not found in $PATH then \*(PA will be installed.
+.paragraph
+.subsubsection "Packages needed to run the self test:"
+.options
+.option publicfile
+The self check needs a ftp server. The ftp server included
+in the publicfile package doesn't need any special entries
+in /etc/passwd and is highly secure.
+.optionparagraph
+The self check expects to find the publicfile ftpd in
+\fI/usr/local/publicfile/bin/ftpd\fR. If you, for any reason, want to
+run the test manually, and publicfile is installed somewhere else, for
+example in /usr/bin, you may run 
+.nf
+.HTML <pre>
+  make PUBLICFILE_FTPD=/usr/bin/ftpd check
+.HTML </pre>
+.fi
+in the compile directory.
+.optionparagraph
+See 
+.extlink http://cr.yp.to/publicfile.html "the publicfile home page" .
+.option ucspi-tcp
+The tcpserver program is needed to open a socket (127.0.0.1,
+port 50000) and to run the publicfile ftp server program.
+.optionparagraph
+See 
+.extlink http://cr.yp.to/ucspi-tcp.html "the ucspi-tcp home page" .
+.option daemontools
+The supervise program is used to start and stop tcpserver.
+.optionparagraph
+See
+.extlink http://cr.yp.to/daemontools.html "the daemontools home page" .
+.endoptions
+.paragraph
+The tests take some time. Things are fine if they do not print anything.
+.LINE
+.subsection "How to report success: (not mandatory)"
+.nf
+.HTML <pre>
+  $ mail uwe-generic-counter@ohse.de <compile/auto-systype
+.HTML </pre>
+.fi
+.paragraph
+Please do not send this email if the self-check failed. Send an
+problem report to the mailing list instead.
+.paragraph
+.LINE
+.subsection "Cleaning up:"
+If you are short on disk space you may remove the compile and src 
+directories:
+.nf
+.HTML <pre>
+  $ rm -rf compile src
+.HTML </pre>
+.fi
+.paragraph
+.LINE
+.subsection "Mailing list:"
+To subscribe to the ftpcopy mailing list send a mail to
+\fBftpcopy-subscribe@lists.ohse.de\fR. The content is ignored.
+.paragraph
+You do not need to subscribe to the mailing list, it is an open one.
+But, if you are not subscribe, make sure you mention this in the mail.
+.paragraph
+Please include the ftpcopy version number, the operating system and
+it's version and any possible relevant output of the failing program.
+Please include compile/auto-systype in your posting.
+.paragraph
+If your system is a GNU/Linux one then please include name and
+version of your distribution and your C library version number (as
+printed by ldd --version).
+.paragraph
+.LINE
+.section "SEE ALSO"
+.nf
+The homepage may be more up-to-date, see
+.extlink http://www.ohse.de/uwe/ftpcopy.html "the ftpcopy home page" .
+.fi

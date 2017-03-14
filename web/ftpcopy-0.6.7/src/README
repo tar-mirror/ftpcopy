@@ -1,0 +1,30 @@
+ftpcopy is a simply FTP client written to copy files or directories
+(recursively) from a FTP server. It's primary purpose is to mirror
+FTP sites which support the EPLF directory listing format, but it
+may be used to mirror other sites, too.
+See
+   http://www.ohse.de/uwe/ftpcopy.html
+for more information.
+
+This package is free software, licensed under the terms of the GNU General 
+Public License Version 2, of which a copy is stored at:
+   http://www.ohse.de/uwe/licenses/GPL-2
+Later versions of the GPL may or may not apply, see 
+   http://www.ohse.de/uwe/licenses/
+for information after a newer version has been published.
+
+The ftpcopy package comes with NO warranty, though i hope it's useful for
+you.
+
+
+Read INSTALL or http://www.ohse.de/uwe/ftpcopy/install.html for 
+instructions how to install ftpcopy.
+
+Read NEWS for information about important changes between releases.
+
+Read http://www.ohse.de/uwe/ftpcopy/faq.html for a list of often asked
+questions with answers.
+
+Distributors may want to read http://www.ohse.de/uwe/ftpcopy/dist.html. 
+
+Uwe Ohse, 2000-7-17

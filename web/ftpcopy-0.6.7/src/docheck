@@ -1,0 +1,1183 @@
+#! /bin/sh
+
+# not checked (list incomplete):
+# --timeout
+
+if test "x$PUBLICFILE_FTPD" = x ; then
+  PUBLICFILE_FTPD="/usr/local/publicfile/bin/ftpd"
+fi
+LC_ALL=C ; export LC_ALL
+LANG=C ; export LANG
+unset BC_LINE_LENGTH
+unset BC_ENV_ARGS
+
+shortcut=0 # or 0 for full test
+
+for i in `echo $PATH | sed 's/:/ /g'` ; do
+	if test -x $i/printenv ; then
+		PRINTENV=$i/printenv
+	fi
+done
+if test "x$PRINTENV" = x ; then echo "printenv not found" >&2 ; exit 1 ; fi
+
+
+rm -rf tmp.check
+mkdir tmp.check || exit 1
+O=`pwd`
+cd tmp.check
+N=`pwd`
+mkdir client || exit 1
+
+# find out how to set the time zone to POSIX UTC (not that it's better
+# than right/UTC, but the tests expect POSIX).
+cat >auto-tztest.c <<EOF
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+int main(void) {
+time_t x=0x3fffffff;
+fputs(ctime(&x),stdout);
+return 0;
+}
+EOF
+$O/auto-compile.sh -g -O2 -o $O/auto-tztest auto-tztest.c || exit 1
+
+for i in posix/UTC UTC ; do
+t=`TZ=$i $O/auto-tztest`
+  if test "x$t" = "xSat Jan 10 13:37:03 2004" ; then
+    mytz=$i
+  fi
+done
+rm $O/auto-tztest
+if test "x$mytz" = x ; then
+  echo "failed to find out how to use posix/UTC" >&2
+  exit 1
+fi
+TZ=$mytz
+export TZ
+
+echo '--- canon works as expected'
+$O/auto-compile.sh -I$O -DTEST -g -O2 -o $O/auto-canon $O/canon.c \
+  $O/libuomisc.a $O/libunix.a $O/libbyte.a
+$O/auto-canon <<EOF
+/files/dir/test.jpg
+/files/dir/../test.jpg
+/files/dir/../dir2/test.jpg
+/files/dir/../../test.jpg
+/files/dir/../../files2/dir2/test.jpg
+/files/dir/../../../files2/dir2/test.jpg
+../files2/dir2/test.jpg
+/../files2/dir2/test.jpg
+/f/d/../f2/x
+/f/../../d/x
+/f/d/../../x
+../x
+/files/dir/../../../files2/dir2/test.jpg
+files/dir/../../../files2/dir2/test.jpg
+EOF
+
+echo '--- ftpparse works as expected'
+cat >fptest.c <<EOF
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include "$O/ftpparse.h"
+int main(int argc, char **argv)
+{
+	char buf[1024];
+	struct ftpparse f;
+	while (fgets(buf,sizeof(buf),stdin)) {
+		char *p;
+		char *c=strchr(buf,'\n');
+		int x;
+		if (c) *c=0;
+		if (*buf=='#') {puts(buf); continue; }
+		printf("in: %s:\n",buf);
+
+		/* for the sake of memory debuggers */
+		p=strdup(buf); if (!p) return 1;
+		if (0==strncmp(p,"MLST:",5))
+		  x=ftpparse_mlsx(&f, p+5,strlen(p)-5,1);
+		else if (0==strncmp(p,"MLSD:",5))
+		  x=ftpparse_mlsx(&f, p+5,strlen(p)-5,0);
+		else
+		  x=ftpparse(&f, p,strlen(p), argc>1);
+		if (!x) {
+		  puts("  unparsable\n");
+		  continue;
+		}
+		fputs("  name: ",stdout); fwrite(f.name,f.namelen,1,stdout);
+		printf("\n  namelen: %d\n",f.namelen);
+		if (f.flagtrycwd) 
+			fputs("  may be directory\n",stdout);
+		if (f.flagtryretr) 
+			fputs("  may be file\n",stdout);
+		if (f.sizetype==FTPPARSE_SIZE_UNKNOWN) {
+			puts("  size: unknown");
+		} else {
+			printf("  sizetype: %d\n",f.sizetype);
+		  printf("  size: ");
+#define MRD 1000000000
+		  if (f.size >= MRD) {
+		    unsigned long x,y;
+		    x=f.size / MRD;
+		    y=f.size % MRD;
+		    printf("%lu%08lu\n",x,y);
+		  } else
+		    printf("%lu\n",(unsigned long)f.size);
+		}
+		if (f.mtimetype == FTPPARSE_MTIME_UNKNOWN) {
+			puts("  mtime: unknown");
+		} else {
+		    time_t t;
+		    t=f.mtime.x-4611686018427387914ULL;
+		    printf("  mtimetype: %d\n",f.mtimetype);
+		    printf("  mtime: %ld %s",t,ctime(&t));
+		}
+		if (f.idtype == FTPPARSE_ID_UNKNOWN) {
+			puts("  id: unknown");
+		} else {
+			printf("  idtype: %d\n",f.idtype);
+			fputs("  id: ",stdout); fwrite(f.id,f.idlen,1,stdout);
+			printf("\n  idlen: %d\n",f.idlen);
+		}
+		if (f.flagbrokenmlsx)
+		  puts("  has unterminated MLSX fact list");
+		free(p);
+	}
+	return 0;
+}
+EOF
+$O/auto-compile.sh -g -O2 -o fptest fptest.c \
+  $O/ftpparse.o $O/utcdate2tai.o $O/libtai.a $O/libbyte.a
+THISYEAR=`date +%Y`
+LASTYEAR=`echo $THISYEAR - 1 | bc`
+(
+./fptest <<EOF
+# generic scan_time checks.
+04-27-99   7:28:39       <DIR>          licensed
+04-27-99  07:28:39       <DIR>          licensed
+04-27-99  17:28:39       <DIR>          licensed
+04-27-99  07:28:39AM     <DIR>          licensed
+04-27-99  07:28:39PM     <DIR>          licensed
+04-27-99   7:28          <DIR>          licensed
+04-27-99  07:28          <DIR>          licensed
+04-27-99  07:28AM        <DIR>          licensed
+04-27-99  07:28PM        <DIR>          licensed
+# bad things
+04-27-99    :28:39       <DIR>          licensed
+04-27-99    :28          <DIR>          licensed
+04-27-99   7:2:39       <DIR>          licensed
+04-27-99  07:28:3       <DIR>          licensed
+04-27-99  17:28:       <DIR>          licensed
+04-27-99  007:28:39       <DIR>          licensed
+04-27-99  07:028:39       <DIR>          licensed
+04-27-99  07:28:039       <DIR>          licensed
+04-27-99  07:28:039AM     <DIR>          licensed
+04-27-99  07:28:039PM     <DIR>          licensed
+04-27-99  07:28:9AM     <DIR>          licensed
+04-27-99  07:28:9PM     <DIR>          licensed
+04-27-99  07:28:39A     <DIR>          licensed
+04-27-99  07:28:39P     <DIR>          licensed
+04-27-99  007:28          <DIR>          licensed
+04-27-99  07:028          <DIR>          licensed
+04-27-99  07:2          <DIR>          licensed
+04-27-99  07:2          <DIR>          licensed
+04-27-99  07          <DIR>          licensed
+04-27-99  07:28A        <DIR>          licensed
+04-27-99  07:28P        <DIR>          licensed
+# EPLF
++i8388621.29609,m824255902,/,	dev
++i8388621.44468,m839956783,r,s10376,	RFCEPLF
++i8388621.44468,m839956783,r,s10000000000,	RFCEPLF
++i8388621.44468,m839956783,r,s10376,	RFC EPLF
+# bad EPLF 
++i8388621.44468,m839956783,r,s10376,	
++i8388621.44468,m839956783,r,s10376,
++i8388621.44468,m839956783,r,s10376
++i,m839956783,r,s10376,	RFCEPLF
++i8388621.44468,m,r,s10376,	RFCEPLF
++i8388621.44468,m839956783,r,s,	RFCEPLF
+# note: not tab, but space.
++i8388621.44468,m839956783,r,s10376, RFCEPLF
+# VMS / MultiNet
+00README.TXT;1      2 30-DEC-1996 17:44 [SYSTEM] (RWED,RWED,RE,RE)
+CORE.DIR;1          1  8-SEP-1996 16:09 [SYSTEM] (RWE,RWE,RE,RE)
+CII-MANUAL.TEX;1  213/216  29-JAN-1996 03:33:12  [ANONYMOU,ANONYMOUS]   (RWED,RWED,,)
+DSPD.MAN;1  9   1-APR-1991 12:55 [SG,ROSENBLUM] (RWED,RWED,RE,RE)
+[VMSSERV.FILES]ALARM.DIR;1      1/3          5-MAR-1993 18:09
+# bad VMS / MultiNet
+00README.TXT;      2 30-DEC-1996 17:44 [SYSTEM] (RWED,RWED,RE,RE)
+00README.TXT      2 30-DEC-1996 17:44 [SYSTEM] (RWED,RWED,RE,RE)
+00README.TXT;1      30-DEC-1996 17:44 [SYSTEM] (RWED,RWED,RE,RE)
+.DIR;1      2 30-DEC-1996 17:44 [SYSTEM] (RWED,RWED,RE,RE)
+# unix
+-r--r--r--   1 uwe      ohse        27040 Jan 29 16:32 s.uogetopt.c
+-r--r--r--   1 uwe      ohse         1382 Dec 18  1991 s.sig.c
+lrwxr-xr-x   1 uwe      ohse           18 Dec 31  1999 SCCS -> XXXXX
+lrwxrwxrwx   1 root     root           35 Jun 19 10:46 mmmm -> dddd
+-rw-r--r--   1 root     other        531 Jan 29 03:26 README
+dr-xr-xr-x   2 root     other        512 Apr  8  1994 etc
+dr-xr-xr-x   2 root     512 Apr  8  1994 etc
+lrwxrwxrwx   1 root     other          7 Jan 25 00:17 bin -> usr/bin
+# stranger cases
+-r--r--r--   1 uwe      ohse        27040 Jan 29 1996 file name
+-r--r--r--   1 uwe      ohse        27040 Jan 29 1996 my file name
+-r--r--r--   1 uwe      ohse        27040 Jan 29 1996 17:01 file name
+-r--r--r--   1 uwe      ohse        27040 Jan 29 1996 17:01
+-rwxrwxrwx   1 uwe      ohse        27040 Jan 29 1996   spacy
+drwxrwxrwx   1 uwe      ohse         1024 Jan 29 1996   spacydir
+- 1 u o 3 Jan 29 1996 17:01 a b c d e f g h i j k l m n o p q r s t
+# bad unix
+-r--r--r--   1 uwe      ohse        27040 Jan 29 16:32
+-r--r--r--   1 uwe      ohse        27040 Jan 29 16:32s.uogetopt.c
+-r--r--r--   1 uwe      ohse        27040 Jan 29 16:3 s.uogetopt.c
+-r--r--r--   1 uwe      ohse        27040 Jan 29 16: s.uogetopt.c
+-r--r--r--   1 uwe      ohse        27040 Jan 29 16 s.uogetopt.c
+-r--r--r--   1 uwe      ohse        27040 Jan 29 s.uogetopt.c
+-r--r--r--   1 uwe      ohse        27040 Jan 29 199 s.uogetopt.c
+-r--r--r--   1 uwe      ohse        27040 jan 29 16:32 s.uogetopt.c
+-r--r--r--   1 uwe      ohse        27040 an 29 16:32 s.uogetopt.c
+-r--r--r--   1 uwe      ohse        Jan 29 16:32 s.uogetopt.c
+-r--r--r--   1 uwe      27040 Jan 29 16:32 s.uogetopt.c
+-r--r--r--   1 ohse        27040 Jan 29 16:32 s.uogetopt.c
+-r--r--r--   uwe      ohse        27040 Jan 29 16:32 s.uogetopt.c
+1 uwe      ohse        27040 Jan 29 16:32 s.uogetopt.c
+l            1 uwe      ohse        27040 Jan 29 16:32 s.uogetopt.c
+l            1 uwe      ohse        27040 Jan 29 16:32 s.uogetopt.c -> ooo
+br--r--r--   1 uwe      ohse        27040 Jan 29 16:32 s.uogetopt.c -> ooo
+br--r--r--   1 uwe      ohse  12345627040 Jan 29 16:32 s.uogetopt.c
+br--r--r--   1 uwe      ohse  10000000000 Jan 29 16:32 s.uogetopt.c
+-r--r--r--   1 uwe      ohse        27040 Jan 29 96 16:32 s.uogetopt.c
+-r--r--r--   1 uwe      ohse        27040 Jan 29 1996 16:32 s.uogetopt.c
+# Microsoft's FTP server for Windows:
+----------   1 owner    group         1803128 Jul 10 10:18 ls-lR.Z
+d---------   1 owner    group               0 May  9 19:45 Softlib
+# WFTPD for Windows:
+-rwxrwxrwx   1 noone    nogroup      322 Aug 19  1996 message.ftp
+# NetPresenz for the Mac:
+-------r--         326  1391972  1392298 Nov 22  1995 MegaPhone.sit
+drwxrwxr-x               folder        2 May 10  1996 network
+# MSDOS
+4-27-00  09:09PM       <DIR>          licensed
+7-18-00  10:16AM       <DIR>          pub
+4-14-00  03:47PM                  589 readme.htm
+03-16-94  06:29AM       <DIR>          .
+03-16-94  06:29AM       <DIR>          ..
+04-11-94  11:48PM       <DIR>          creative
+03-08-94  07:17AM                 5504 article.xfiles.intro
+02-28-94  11:44AM                 3262 article1.gillian.anderson
+02-28-04  11:44AM                 3262 article1.gillian.anderson
+02-28-94  11:44:55AM                 3262 article1.gillian.anderson
+02-28-94  11:44AM          10000000000 article1.gillian.anderson
+02-28-1994  11:44AM                 3262 article1.gillian.anderson
+# MSDOS with leading spaces, aka NT.
+03-16-94  06:29AM       <DIR>           dirnamewithleadingspace
+03-16-94  06:29AM                  123  filenamewithleadingspace
+# bad MSDOS
+2-28-94  11:44AM                 3262 article1.gillian.anderson
+02-8-94  11:44AM                 3262 article1.gillian.anderson
+02-28-4  11:44AM                 3262 article1.gillian.anderson
+02-28-94  11:44AM                 article1.gillian.anderson
+02-28-94  11:44AM                 3262 
+02-28-94  11:44AM                 3262
+# NetWare. Quite like unix.
+d [R----F--] supervisor            512       Jan 16 18:53    login
+- [R----F--] rhesus             214059       Oct 20 15:27    cx.exe
+- [R----F--] jrd                197928       Sep 25 15:19    kermit.exe
+d [R----F--] jrd                   512       Oct 06 09:31    source
+d [RWCEAFMS] jrd                   512       Sep 04 14:38    lwp
+d [R----F-]  1 carl                   512 Mar 12 15:47 txt
+- [-RWCE-F-] mlm                   11820 Feb  3 93 12:00  drivers.doc
+-[R----F-]  1 supervis      256 Nov 15 14:21 readme.txt
+# supertcp
+.               <DIR>           11-16-94        17:16
+..              <DIR>           11-16-94        17:16
+INSTALL         <DIR>           11-16-94        17:17
+CMT             <DIR>           11-21-94        10:17
+DESIGN1.DOC          11264      05-11-95        14:20
+README.TXT            1045      05-10-95        11:01
+WPKIT1.EXE          960338      06-21-95        17:01
+CMT.CSV                  0      07-06-95        14:56
+# bad supertcp
+WPKIT1.EXE                      06-21-95        17:01
+WPKIT1.EXE     10000000000      06-21-95        17:01
+WPKIT1.EXE          960338       6-21-95        17:01
+# OS/2
+                0           DIR   04-11-95   16:26  .
+                0           DIR   04-11-95   16:26  ..
+                0           DIR   04-11-95   16:26  ADDRESS
+              612      A          07-28-95   16:45  air_tra1.bag
+              195      A          08-09-95   10:23  Alfa1.bag
+                0           DIR   04-11-95   16:26  ATTACH
+              372      A          08-09-95   10:26  Aussie_1.bag
+           310992                 06-28-94   09:56  INSTALL.EXE
+# ------------------------------ VM/CMS
+DIRACC   EXEC     A1    F    132         84          3  01/25/93  14:49:47
+DIRUNIX  SCRIPT   A1    V     77       1216         17  01/04/93  20:30:47
+MAIL     PROFILE  A2    F     80          1          1  10/14/92  16:12:27
+# MLSD
+MLSD:size=4161;lang=en-US;modify=19970214165800;create=19961001124534;type=file;x.myfact=foo,bar; filename
+MLST: Type=file;Size=1024990;Perm=r; /tmp/cap60.pl198.tar.gz
+MLST: Type=dir;Modify=19981107085215;Perm=el; /tmp
+MLSD:Type=cdir;Modify=19981107085215;Perm=el; tmp
+MLSD:Type=cdir;Modify=19981107085215;Perm=el; /tmp
+MLSD:Type=pdir;Modify=19990112030508;Perm=el; ..
+MLSD:Type=file;Size=25730;Modify=19940728095854;Perm=; capmux.tar.z
+MLSD:Type=file;Size=1830;Modify=19940916055648;Perm=r; hatch.c
+MLSD:Type=file;Size=25624;Modify=19951003165342;Perm=r; MacIP-02.txt
+MLSD:Type=file;Size=2154;Modify=19950501105033;Perm=r; uar.netbsd.patch
+MLSD:Type=file;Size=54757;Modify=19951105101754;Perm=r; iptnnladev.1.0.sit.hqx
+MLSD:Type=file;Size=226546;Modify=19970515023901;Perm=r; melbcs.tif
+MLSD:Type=file;Size=12927;Modify=19961025135602;Perm=r; tardis.1.6.sit.hqx
+MLST: Type=dir;Perm=el;Unique=keVO1+ZF4 test
+MLSD:Type=cdir;Perm=el;Unique=keVO1+ZF4; test
+MLSD:Type=pdir;Perm=e;Unique=keVO1+d?3; ..
+MLSD:Type=OS.unix=slink:/foobar;Perm=;Unique=keVO1+4G4; foobar
+MLSD:Type=OS.unix=chr-13/29;Perm=;Unique=keVO1+5G4; device
+MLSD:Type=OS.unix=blk-11/108;Perm=;Unique=keVO1+6G4; block
+MLSD:Type=file;Perm=awr;Unique=keVO1+8G4; writable
+MLSD:Type=dir;Perm=cpmel;Unique=keVO1+7G4; promiscuous
+MLSD:Type=dir;Perm=;Unique=keVO1+1t2; no-exec
+MLSD:Type=file;Perm=r;Unique=keVO1+EG4; two words
+MLSD:Type=file;Perm=r;Unique=keVO1+IH4;  leading space
+MLSD:Type=file;Perm=r;Unique=keVO1+1G4; file1
+MLSD:Type=dir;Perm=cpmel;Unique=keVO1+7G4; incoming
+MLSD:Type=file;Perm=r;Unique=keVO1+1G4; file2
+MLSD:Type=file;Perm=r;Unique=keVO1+1G4; file3
+MLSD:Type=file;Perm=r;Unique=keVO1+1G4; file4
+# checking the "usual" MLSX brokeness, too.
+MLSD:size=4161;lang=en-US;modify=19970214165800;create=19961001124534;type=file;x.myfact=foo,bar filename
+EOF
+echo '--- ftpparse handling of file names starting with spaces'
+./fptest <<EOF
+# AIX 5.1 server - note the space at a different place
+-rw-r--r--   1 818      epsystem          4 Jan 01 2000  junk-old
+-rw-r--r--   1 818      epsystem          5 Sep 26 08:10 junk-new
+# this isn't AIX, but ...
+-rw-r--r--   1 818      epsystem          4 Jan 01  2000  junk-old2
+EOF
+echo '--- ftpparse eating spaces when ordered'
+./fptest 12345 <<EOF
+# AIX 5.1 server - note the space at a different place
+-rw-r--r--   1 818      epsystem          4 Jan 01 2000  junk-old
+-rw-r--r--   1 818      epsystem          5 Sep 26 08:10 junk-new
+# this isn't AIX, but ...
+-rw-r--r--   1 818      epsystem          4 Jan 01  2000  junk-old2
+EOF
+) | sed -e "s/$THISYEAR/SOMEYEAR/" -e "s/$LASTYEAR/SOMEYEAR/" \
+        -e "s/mtime:.*SOMEYEAR/mtime: LAST 12 MONTHS/"
+# The problem lthe lines above solve is that "Nov 15 16:32" will be
+# interpreted as "$LASTYEAR", or, after that time, as $THISYEAR.
+# i checked whether this stuff really works, at least once.
+
+rm -f fptest fptest.o
+
+#TZ=right/UTC # get rid of TAI / UTC difference
+#export TZ
+
+echo '--- ftpcopy prints usage message without enough arguments'
+$O/ftpcopy ; echo $?
+$O/ftpcopy 127.255.255.255 ; echo $?
+echo '--- ftpcopy refuses default localdir . without -n option'
+$O/ftpcopy ftp://127.255.255.255:0/ ; echo $?
+$O/ftpcopy 127.255.255.255 0 ; echo $?
+echo '--- ftpcopy prints usage message with too many arguments'
+$O/ftpcopy ftp://127.255.255.255:0/ client superfluous ; echo $?
+$O/ftpcopy ftp://127.255.255.255:0/ client superfluous super2 ; echo $?
+$O/ftpcopy 127.255.255.255:0 / client superfluous ; echo $?
+$O/ftpcopy 127.255.255.255:0 / client superfluous super2 ; echo $?
+echo '--- ftpcopy refuses unknown url schemes'
+$O/ftpcopy ftpcopy://127.255.255.255:0/ ; echo $?
+$O/ftpcopy http://127.255.255.255:0/ ; echo $?
+$O/ftpcopy Ftp://127.255.255.255:0/ ; echo $?
+echo '--- ftpcopy prints error message with unknown port name'
+$O/ftpcopy ftp://127.255.255.255:nonexistantport/ client ; echo $?
+$O/ftpcopy 127.255.255.255:nonexistantport / client ; echo $?
+echo '--- ftpcopy prints error message with unknown host name'
+$O/ftpcopy ftp://nonexistinghost:ftp/ client ; echo $?
+$O/ftpcopy nonexistinghost:ftp / client ; echo $?
+echo '--- ftpcopy prints error message with unresolvable host name'
+$O/ftpcopy ftp://thislabelistoolongbecausednshasalimitof63charactersinasinglelabel.:ftp/ client ; echo $?
+$O/ftpcopy thislabelistoolongbecausednshasalimitof63charactersinasinglelabel.:ftp / client ; echo $?
+
+echo '--- set up ftp service'
+mkdir $N/server 
+mkdir $N/server/ftpd
+mkdir $N/server/file
+mkdir $N/server/file/0
+cat >$N/server/ftpd/run <<EOF
+#!/bin/sh
+# one million bytes for the shell ...
+exec softlimit -o20 -d1000000 tcpserver \
+-vDRHl0 -b20 -c40 -B'220 Features: a p .
+' 127.0.0.1 50000 \
+sh -c "cd '$N'/server/file ; exec $PUBLICFILE_FTPD"
+EOF
+chmod +x $N/server/ftpd/run
+supervise $N/server/ftpd 2>$N/server.log &
+sleep 2
+F="$N/server/file/0"
+
+if test "x$shortcut" = "x0" ; then
+
+# against stupid patches.
+echo '--- publicfile listing format check'
+touch $F/file
+out=`$O/ftpls --raw ftp://127.0.0.1:50000/` || out="-bad"
+case "$out" in
+-*) 
+  echo "badly patched publicfile detected. Further tests not run"
+  svc -dtx $N/server/ftpd
+  sleep 1 # give supervise time to exit. otherwise race with supervise/status file
+  #cat $N/server.log |grep -v ^tcpserver
+  rm onetouch
+  cd $O || exit 1
+  rm -rf tmp.check
+  exit 0
+  ;;
+esac
+rm $F/file
+echo '--- empty start directory test'
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+echo '--- nonexistant start entity'
+$O/ftpcopy ftp://127.0.0.1:50000/nonexistant client ; echo $?
+#mkdir "$F/t1"
+#mkdir "$F/t1" ; touch "$F/t1/file"; chmod 000 "$F/t1/file"
+echo '--- start entity is a file'
+touch $F/file
+$O/ftpcopy ftp://127.0.0.1:50000/file ./file ; echo $?
+$O/ftpcopy ftp://127.0.0.1:50000/file ./file ; echo $?
+$O/ftpcopy ftp://127.0.0.1:50000/file file ; echo $?
+rm file
+$O/ftpcopy ftp://127.0.0.1:50000/file file ; echo $?
+$O/ftpcopy ftp://127.0.0.1:50000/file ./file ; echo $?
+$O/ftpcopy ftp://127.0.0.1:50000/file file ; echo $?
+rm file
+$O/ftpcopy ftp://127.0.0.1:50000/file client ; echo $?
+$O/ftpcopy ftp://127.0.0.1:50000/file client ; echo $?
+rm client/file
+$O/ftpcopy ftp://127.0.0.1:50000/file client/ ; echo $?
+$O/ftpcopy ftp://127.0.0.1:50000/file client/ ; echo $?
+rm client/file
+$O/ftpcopy ftp://127.0.0.1:50000/file client/file ; echo $?
+rm client/file
+echo '--- start entity is a file, ftpcopy creates parent directory'
+$O/ftpcopy ftp://127.0.0.1:50000/file createit/file ; echo $?
+rm createit/file ; rmdir createit
+$O/ftpcopy ftp://127.0.0.1:50000/file createit/ ; echo $?
+rm createit/file ; rmdir createit
+echo '--- start entity is a file, ftpcopy handles different local name'
+$O/ftpcopy ftp://127.0.0.1:50000/file createit ; echo $?
+rm createit
+
+echo '--- start entity is a directory with one file'
+rm -rf client/*
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+rm -rf client/*
+$O/ftpcopy ftp://127.0.0.1:50000/ client/subdir ; echo $?
+echo '--- start entity is a directory with two files'
+rm $F/file
+touch $F/one $F/two
+rm -rf client/*
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+rm -rf client/*
+$O/ftpcopy ftp://127.0.0.1:50000/ client/subdir ; echo $?
+echo '--- start entity contains one directory with two files'
+rm -rf client/*
+rm -rf $F/*
+mkdir $F/dir
+touch $F/dir/one $F/dir/two
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+rm -rf client/*
+$O/ftpcopy ftp://127.0.0.1:50000/ client/subdir ; echo $?
+echo '--- ftpcopy deletes superfluous files'
+rm -rf client/*
+rm -rf $F/*
+mkdir $F/dir
+touch $F/dir/one $F/dir/two
+cp -pr $F/dir client/dir
+touch client/dir/three
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+echo '--- ftpcopy deletes superfluous directories'
+rm -rf client/*
+rm -rf $F/*
+mkdir $F/dir
+touch $F/dir/one $F/dir/two
+cp -pr $F/dir client/dir
+mkdir client/dir2
+mkdir client/dir/dir4
+$O/ftpcopy ftp://127.0.0.1:50000/ client | sort 
+echo -
+find client -print | sort
+echo '--- ftpcopy survives if a file is turned into a directory'
+rm $F/dir/one
+mkdir $F/dir/one
+touch $F/dir/one/three # so something is downloaded
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+find client -print | sort
+echo '--- ftpcopy survives if a directory is turned into a file'
+rm -rf $F/dir/one
+touch $F/dir/one
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+find client -print | sort
+
+echo '--- ftpcopy survives local symlink loops'
+rm client/dir/one
+ln -s one client/dir/one
+echo "first symlink loop test" >$F/dir/one
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+cat client/dir/one
+find client -print | sort
+
+rm client/dir/one
+ln -s one client/dir/one
+rm $F/dir/one
+mkdir $F/dir/one
+echo "second symlink loop test" >$F/dir/one/file
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+cat client/dir/one/file
+find client -print | sort
+
+echo '--- ftpcopy recognizes changed symbolic links to directories'
+rm -rf client/* $F/*
+mkdir $F/dir1
+touch $F/dir1/one
+(cd $F ; ln -s dir1 dir2 )
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+find client -print | sort
+rm $F/dir2
+mkdir $F/dir2
+touch $F/dir2/two
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+find client -print | sort
+echo '--- ftpcopy handles dir -> symbolic link change'
+rm -rf $F/dir2
+(cd $F ; ln -s dir1 dir2 )
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+find client -print | sort
+
+echo '--- ftpcopy deals with rename situation 1'
+rm -rf client/* $F/*
+mkdir $F/dir1
+touch $F/dir1/one
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+find client -print | sort
+(cd $F ; ln -s dir1 dir2 )
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+find client -print | sort
+(cd $F ; rm dir2 ; mv dir1 dir2 ; ln -s dir2 dir1 )
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+find client -print | sort
+(cd $F ; rm dir1 )
+$O/ftpcopy ftp://127.0.0.1:50000/ client |sort ; echo -
+find client -print | sort
+
+echo '--- ftpcopy deals with symlink to upper level directories'
+rm -rf client/* $F/*
+mkdir $F/dir1
+mkdir $F/dir1/dir2
+touch $F/dir1/dir2/one
+(cd $F/dir1/dir2 ; ln -s ../../dir1 dir1 )
+(cd $F/dir1/dir2 ; ln -s ../../dir1 dir2 )
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+touch client/dir1/dir2/dir1/1
+touch client/dir1/dir2/dir2/2
+find client -print | sort
+echo '--- ftpcopy deals with symlink to current directories'
+rm -rf client/* $F/*
+mkdir $F/dir1
+mkdir $F/dir1/dir2
+touch $F/dir1/dir2/one
+(cd $F/dir1 ; ln -s . dir1 )
+(cd $F/dir1/dir2 ; ln -s . dir2 )
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+touch client/dir1/dir1/1
+touch client/dir1/dir2/dir2/2
+find client -print | sort
+echo '--- ftpcopy deals with symlink to top level directory'
+rm -rf client/* $F/*
+touch $F/one
+mkdir $F/dir1
+mkdir $F/dir1/dir2
+touch $F/dir1/dir2/two
+# can't do this since the server isn't chrooted:
+# (cd $F/dir1/dir2 ; ln -s / dir3 )
+(cd $F/dir1 ; ln -s $F dir1 )
+(cd $F/dir1 ; ln -s $F/one . )
+(cd $F/dir1/dir2 ; ln -s $F dir2 )
+(cd $F/dir1/dir2 ; ln -s $F/one . )
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+touch client/dir1/dir1/1
+touch client/dir1/dir2/dir2/2
+find client -print | sort
+echo "really a (sym)link" >client/one
+cat client/dir1/one
+
+echo '--- ftpcopy deals with symlink to lower level directory'
+rm -rf client/* $F/*
+(cd $F ; ln -s dir2/dir1 dir1)
+(cd $F ; ln -s dir2/file1 file1)
+mkdir $F/dir2
+(cd $F ; ln -s dir2/dir3 dir3)
+(cd $F ; ln -s dir2/file3 file3)
+mkdir $F/dir2/dir1
+touch $F/dir2/dir1/one
+touch $F/dir2/file1
+touch $F/dir2/file3
+mkdir $F/dir2/dir3
+touch $F/dir2/dir3/three
+$O/ftpcopy ftp://127.0.0.1:50000/ client ; echo $?
+touch client/dir2/dir1/1
+touch client/dir3/3
+find client -print | sort
+echo "really a (sym)link 1" >client/dir2/dir1/new
+echo "really a (sym)link 2" >client/dir2/file1
+echo "really a (sym)link 3" >client/dir2/file3
+cat client/dir1/new
+cat client/file1
+cat client/file3
+
+echo '--- ftpcopy deals with /../ in local file names'
+# this checks a few lines of canonization code.
+# canonization is mainly used for the hashed file names,
+# the (untestable) hacking symbolic link mode, and 
+# remote path names.
+rm -rf client/* $F/*
+echo 1 >$F/one
+mkdir $F/dir1
+( cd $F/dir1 ; ln -s ../one two)
+
+$O/ftpcopy -l2 ftp://127.0.0.1:50000/ client/../client/ ; echo $?
+find client -print | sort
+echo "changed" >client/one
+cat client/dir1/two
+
+
+echo '--- ftpcopy --max-days works'
+# to make things more interesting publicfiles ftpd doesn't output 
+# modification time for files modified in the last 60 seconds.
+# ftpparse() returns them as modified 1970, and ftpcopy thinks 
+# they are "too old". Ugly, but this is how things work.
+# "1" and "3" are dated 2000-01-01         -> not downloaded
+# "2" and "5" are one day old.             -> downloaded
+# "3" and "6" are very young (<60 seconds) -> not downloaded
+cat >oneday.c <<EOF
+#include <time.h>
+int main(void)
+{
+time_t x=time(0) - 86400;
+printf("%lu\n",x);
+exit(0);
+}
+EOF
+$O/auto-compile.sh -o oneday oneday.c 
+oneday="`./oneday`"
+rm oneday.c oneday
+
+cat >onetouch.c <<EOF
+#include <sys/time.h>
+#include <fcntl.h>
+int main(int argc, char **argv)
+{ unsigned long x=strtol(argv[1],0,10);
+  int fd;
+  struct timeval tv[2];
+  fd=open(argv[2],O_WRONLY|O_CREAT,0644);
+  tv[0].tv_sec=x;
+  tv[1].tv_sec=x;
+  tv[0].tv_usec=0;
+  tv[1].tv_usec=0;
+  return utimes(argv[2],tv);
+}
+EOF
+$O/auto-compile.sh -o onetouch onetouch.c 
+rm onetouch.c
+
+rm -rf client/* $F/*
+#touch -r $O/Makefile.pre $F/1
+mkdir $F/dir
+./onetouch 946753200 $F/1
+./onetouch 946753200 $F/dir/4
+./onetouch $oneday $F/2
+./onetouch $oneday $F/dir/5
+touch $F/3
+touch $F/dir/6
+$O/ftpcopy --max-days 10 -l2 ftp://127.0.0.1:50000/ client ; echo $?
+#gdb $O/ftpcopy #--max-days 10 -l2 ftp://127.0.0.1:50000/ client ; echo $?
+find client -print | sort
+
+
+echo '--- ftpcopy handles excludes and includes'
+rm -rf client/* $F/*
+touch $F/0
+mkdir $F/d1
+touch $F/d1/1
+mkdir $F/d1/d2
+touch $F/d1/d2/2
+mkdir $F/d1/d2/d3
+touch $F/d1/d2/d3/3
+
+echo '- e&i: download /0'
+rm -rf client
+$O/ftpcopy --exclude '*' --include /0 \
+   ftp://127.0.0.1:50000/ client ; echo $?
+
+echo '- e&i: no download due to not included upper level directory'
+rm -rf client
+$O/ftpcopy --exclude '*' --include /d1/1 \
+   ftp://127.0.0.1:50000/ client ; echo $?
+
+echo '- e&i: download /d1/1 (include /d1 and /d1/1)'
+rm -rf client
+$O/ftpcopy --exclude '*' --include '/d1' --include /d1/1 \
+   ftp://127.0.0.1:50000/ client ; echo $?
+echo '- e&i: download /d1/1 (include /d1 and /d1/?)'
+rm -rf client
+$O/ftpcopy --exclude '*' --include '/d1' --include '/d1/?' \
+   ftp://127.0.0.1:50000/ client ; echo $?
+echo '- e&i: download all (include /d1*)'
+rm -rf client
+$O/ftpcopy --exclude '*' --include '/d1*' \
+   ftp://127.0.0.1:50000/ client ; echo $?
+echo '- e&i: just get the directories (include *d?)'
+rm -rf client
+$O/ftpcopy --exclude '*' --include '*d?' \
+   ftp://127.0.0.1:50000/ client ; echo $?
+find client -print | sort
+echo '- e&i: just get the directories (include /d1, /d1/d2, /d1/d2/d3)'
+rm -rf client
+$O/ftpcopy --exclude '*' --include '/d1' --include '/d1/d2' \
+--include '/d1/d2/d3' \
+   ftp://127.0.0.1:50000/ client ; echo $?
+find client -print | sort
+echo '- e&i: get all but */2*'
+rm -rf client
+$O/ftpcopy --exclude '*/2*' \
+   ftp://127.0.0.1:50000/ client ; echo $?
+find client -print | sort
+
+echo '- e&i: --in-exclude-file check (bad syntax)'
+rm -rf client
+(
+echo '-*' ; 
+echo '?/0' ;
+echo '+/0' ;
+) >inex-file
+$O/ftpcopy --in-exclude-file ./inex-file ftp://127.0.0.1:50000/ client ; echo $?
+echo '- e&i: --in-exclude-file check'
+rm -rf client
+(
+echo '-*' ; 
+echo '+/0' ;
+) >inex-file
+$O/ftpcopy --in-exclude-file ./inex-file ftp://127.0.0.1:50000/ client ; echo $?
+
+echo '--- ftpcopy handles subdirectory mirroring'
+rm -rf client/* $F/*
+mkdir $F/dir1
+(cd $F/dir1 ; ln -s ../dir2 .)
+(cd $F/dir1 ; ln -s ../dir2/file21 .)
+mkdir $F/dir11
+mkdir $F/dir2
+mkdir $F/dir2/dir21
+echo file211 >$F/dir2/dir21/file211
+(cd $F/dir2 ; ln -s dir21/file211 file21 )
+mkdir $F/dir3
+(cd $F/dir3 ; ln -s . dir3)
+mkdir $F/dir3/dir31
+echo file31 >$F/dir3/file31
+echo file311 >$F/dir3/dir31/file31
+
+echo '- subdir1:'
+$O/ftpcopy ftp://127.0.0.1:50000/dir1 client ; echo $?
+find client -print | sort
+echo "changed" >client/file21
+cat client/dir2/file21
+echo '- subdir2:' # including deletes
+$O/ftpcopy ftp://127.0.0.1:50000/dir2 client |sort ; echo -
+find client -print | sort
+echo '- subdir3:' # including deletes
+$O/ftpcopy ftp://127.0.0.1:50000/dir3 client |sort ; echo -
+touch client/dir3/newfile
+find client -print | sort
+
+echo '--- ftpcopy --directories-only works'
+# depends on previous file structure
+$O/ftpcopy --directories-only ftp://127.0.0.1:50000/ client | sort
+echo -
+find client -print | sort
+rm -rf client
+$O/ftpcopy -d 127.0.0.1:50000 / client ; echo $?
+find client -print | sort
+
+echo '--- ftpcopy handles absolute local directories'
+# this is more superfluous than not. But then again it doesn't cost that much.
+rm -rf client/* $F/*
+touch $F/0
+mkdir $F/d1
+touch $F/d1/1
+mkdir $F/d1/d2
+(cd $F/d1/d2 ; ln -s ../../0 .)
+(cd $F/d1/d2 ; ln -s ../1 .)
+(cd $F/d1/d2 ; ln -s ../.. d0)
+(cd $F/d1/d2 ; ln -s .. d1)
+(cd $F/d1/d2 ; ln -s . d2)
+touch $F/d1/d2/2
+$O/ftpcopy 127.0.0.1:50000 / `env - pwd`/client ; echo $?
+touch client/d1/d2/d0/t0
+touch client/d1/d2/d1/t1
+touch client/d1/d2/d2/t2
+echo "changed0" >client/0
+echo "changed1" >client/d1/1
+find client -print | sort
+cat client/d1/d2/0
+cat client/d1/d2/1
+
+echo '--- ftpcopy recognizes --user and --pass'
+# we can't really test whether these options work. common.c is too 
+# smart for that.
+rm -rf client/* $F/*
+$O/ftpcopy -l3 --user uwe --pass 42 127.0.0.1:50000 / `pwd`/client ; echo $?
+$O/ftpcopy -l3 -u uwe -p 42 127.0.0.1:50000 / `pwd`/client ; echo $?
+echo '--- ftpcopy recognizes username in urls'
+$O/ftpcopy -l3 ftp://uwe@127.0.0.1:50000/ client ; echo $?
+
+echo '--- ftpcopy --dry-run works'
+rm -rf client/* $F/*
+touch $F/file0
+mkdir $F/dir1
+touch $F/dir1/file1
+mkdir $F/dir1/dir2
+touch $F/dir1/dir2/file2
+(cd $F/dir1/dir2 ; ln -s '../../file0' 'linkf0')
+(cd $F/dir1/dir2 ; ln -s '../file1' 'linkf1')
+(cd $F/dir1/dir2 ; ln -s 'file2' 'linkf2')
+(cd $F ; ln -s 'dir1/dir2/file2' 'linkf2')
+(cd $F ; ln -s 'dir1/file1' 'linkf1')
+mkdir $F/directory_to_keep
+echo 123 >$F/directory_to_keep/file_to_keep
+echo 124 >$F/directory_to_keep/file_to_get
+touch client/do_delete
+mkdir client/directory_to_keep
+touch client/directory_to_keep/file_to_keep # note: will be downloaded
+touch client/directory_to_keep/file2delete
+mkdir client/directory_to_delete
+touch client/directory_to_delete/file2delete
+
+$O/ftpcopy --dry-run 127.0.0.1:50000 / client |sort ; echo -
+find client -print | sort
+fi
+
+echo '--- ftpcopy --interactive works'
+rm -rf client/* $F/*
+mkdir $F/dir1
+(cd $F/dir1 ; ln -s ../dir2 .)
+(cd $F/dir1 ; ln -s ../dir2/file21 .)
+mkdir $F/dir11
+mkdir $F/dir2
+mkdir $F/dir2/dir21
+echo file211 >$F/dir2/dir21/file211
+(cd $F/dir2 ; ln -s dir21/file211 file21 )
+mkdir $F/dir3
+(cd $F/dir3 ; ln -s . dir3)
+mkdir $F/dir3/dir31
+echo file31 >$F/dir3/file31
+echo file311 >$F/dir3/dir31/file31
+
+# This also checks how ftpcopy deals with absolute remote paths.
+(
+cat <<EOF
+dir1
+client/dir1
+/dir1
+client/dir1a
+dir2
+client/dir2
+dir3
+client/dir3
+/ dir3
+EOF
+) | $O/ftpcopy --interactive 127.0.0.1:50000 ; echo $?
+find client -print | sort
+$O/ftpcopy 127.0.0.1:50000 / client |sort ; echo -
+find client -print | sort
+
+echo '--- ftpcopy --tolower works'
+rm -rf client/* $F/*
+touch $F/file0
+mkdir $F/dir1
+touch $F/dir1/FILE1
+mkdir $F/dir1/DIR2
+touch $F/dir1/DIR2/FILE2
+(cd $F ; ln -s 'dir1/DIR2/FILE2' 'LINK')
+
+$O/ftpcopy -l2 --tolower 127.0.0.1:50000 / client ; echo $?
+find client -print | sort
+
+echo '--- ftpcopy --tolower does not needlessly reget files'
+$O/ftpcopy -l2 --tolower 127.0.0.1:50000 / client ; echo $?
+
+echo '--- ftpcopy --tolower deals with collisions'
+# in this case it loses and downloads the files more than once. Oh well.
+echo 123 >$F/dir1/FiLE1
+(cd $F ; ln -s 'dir1/FiLE1' 'link')
+# "wc" tends to add different amounts of white space, depending on the
+# vendor. Oh.
+$O/ftpcopy  --tolower 127.0.0.1:50000 / client | wc -l | tr -d ' ' # 1 download
+$O/ftpcopy  --tolower 127.0.0.1:50000 / client | wc -l | tr -d ' ' # 2 downloads
+$O/ftpcopy  --tolower 127.0.0.1:50000 / client | wc -l | tr -d ' ' # 2 downloads
+
+echo '--- ftpcopy --tolower works with exclude, too'
+rm -rf client/* $F/*
+touch $F/file0
+mkdir $F/dir1
+touch $F/dir1/FILE1
+mkdir $F/dir1/DIR2
+touch $F/dir1/DIR2/FILE2
+(cd $F ; ln -s 'dir1/DIR2/FILE2' 'LINK')
+# the important thing is to write dir2 in lower case.
+$O/ftpcopy -l2 --tolower --exclude "*dir2*" 127.0.0.1:50000 / client ; echo $?
+find client -print | sort
+
+echo '--- ftpcopy --ignore-size works'
+rm -rf client/* $F/*
+echo 123 >$F/FILE1
+$O/ftpcopy 127.0.0.1:50000 / client
+echo 1234 >$F/FILE1
+$O/ftpcopy --ignore-size 127.0.0.1:50000 / client
+echo '--- ftpcopy without --ignore-size works'
+$O/ftpcopy 127.0.0.1:50000 / client
+
+echo '--- ftpcopy --ignore-time works'
+rm -rf client/* $F/*
+echo 123 >$F/FILE1
+./onetouch 946000000 $F/FILE1
+$O/ftpcopy 127.0.0.1:50000 / client
+./onetouch 947000000 $F/FILE1
+$O/ftpcopy --ignore-time 127.0.0.1:50000 / client
+echo '--- ftpcopy --ignore-size --ignore-time works'
+echo >$F/FILE1
+./onetouch 945000000 $F/FILE1
+$O/ftpcopy --ignore-time --ignore-size 127.0.0.1:50000 / client
+echo '--- ftpcopy without --ignore-time works'
+echo 123 >$F/FILE1
+./onetouch 944000000 $F/FILE1
+$O/ftpcopy 127.0.0.1:50000 / client
+
+echo '--- ftpcopy has no file descriptor leak in remove_dir'
+rm -rf client/* $F/*
+for i in 0 1 2 3 ; do
+  for j in 1 2 3 4 5 6 7 8 9 0 ; do
+    mkdir client/d$i$j
+    touch $F/d$i$j
+  done
+done
+(
+	ulimit -n 12
+	$O/ftpcopy  127.0.0.1:50000 / client
+)
+
+echo '--- ftpcopy has no file descriptor leak in loop'
+rm -rf client/* $F/*
+for i in 0 1 2 3 ; do
+  for j in 1 2 3 4 5 6 7 8 9 0 ; do
+    mkdir $F/d$i$j
+    touch $F/d$i$j/f$i$j
+  done
+done
+(
+	ulimit -n 12
+	$O/ftpcopy  127.0.0.1:50000 / client
+)
+
+echo '--- ftpcopy has no file descriptor leak in delete'
+rm -rf client/* $F/*
+for i in 0 1 2 3 ; do
+  for j in 1 2 3 4 5 6 7 8 9 0 ; do
+    mkdir client/d$i$j
+    touch client/d$i$j/f$i$j
+  done
+done
+(
+	ulimit -n 12
+	$O/ftpcopy  127.0.0.1:50000 / client 
+) | sort
+
+echo '--- ftpcopy has no file descriptor leak in download'
+rm -rf client/* $F/*
+for i in 0 1 2 3 ; do
+  for j in 1 2 3 4 5 6 7 8 9 0 ; do
+    mkdir $F/d$i$j
+    touch $F/d$i$j/f$i$j
+  done
+done
+(
+	ulimit -n 12
+	$O/ftpcopy 127.0.0.1:50000 / client
+)
+echo '--- ftpcopy --max-deletes works'
+rm -rf client/* $F/*
+touch $F/1
+(cd client; touch 1 2 3 4 5 6 7 8 9 a b c d e f )
+$O/ftpcopy -l 0 --max-deletes 10 127.0.0.1:50000 / client
+# note: finds directory "client", too, so the numbers are one off ...
+find client -print | wc -l | tr -d ' '
+$O/ftpcopy -l 0 -M 1 127.0.0.1:50000 / client
+find client -print | wc -l | tr -d ' ' 
+
+echo '--- ftpcopy --max-size works'
+rm -rf client/* $F/*
+cp $O/ftpcopy.c $F/1
+head -n 100 $O/ftpcopy.c >$F/2
+head -n 10 $O/ftpcopy.c >$F/3
+$O/ftpcopy -l 0 --max-size 1000 127.0.0.1:50000 / client
+# note: finds directory "client", too, so the numbers are one off ...
+find client -print | sort
+$O/ftpcopy -l 0 127.0.0.1:50000 / client
+find client -print | sort
+
+echo '--- ftpcopy --ascii-listings works'
+# this doesn't catch everything, but might catch if something is horribly
+# broken.
+rm -rf client/* $F/*
+cp $O/ftpcopy.c $F/1
+cp $O/ftpcopy $F/2
+printf "hello\r\nworld\nHello\r\nWorld\n" >$F/3
+mkdir $F/D
+cp $O/ftpcopy.c $F/D/1
+cp $O/ftpcopy $F/D/2
+printf "hello\r\nworld\nHello\r\nWorld\n" >$F/D/3
+mkdir $F/D/D
+cp $O/ftpcopy.c $F/D/D/1
+cp $O/ftpcopy $F/D/D/2
+printf "hello\r\nworld\nHello\r\nWorld\n" >$F/D/D/3
+echo '- part one: binary mode listing'
+$O/ftpcopy -l 0 127.0.0.1:50000 / client
+find client -print | sort
+cmp $F/1 client/1 && echo "client/1 ok"
+cmp $F/2 client/2 && echo "client/2 ok"
+cmp $F/3 client/3 && echo "client/3 ok"
+cmp $F/D/1 client/D/1 && echo "client/D/1 ok"
+cmp $F/D/2 client/D/2 && echo "client/D/2 ok"
+cmp $F/D/3 client/D/3 && echo "client/D/3 ok"
+cmp $F/D/D/1 client/D/D/1 && echo "client/D/D/1 ok"
+cmp $F/D/D/2 client/D/D/2 && echo "client/D/D/2 ok"
+cmp $F/D/D/3 client/D/D/3 && echo "client/D/D/3 ok"
+rm -rf client/*
+echo '- part two: ascii mode listing'
+$O/ftpcopy --ascii-listings -l 0 127.0.0.1:50000 / client
+find client -print | sort
+cmp $F/1 client/1 && echo "client/1 ok"
+cmp $F/2 client/2 && echo "client/2 ok"
+cmp $F/3 client/3 && echo "client/3 ok"
+cmp $F/D/1 client/D/1 && echo "client/D/1 ok"
+cmp $F/D/2 client/D/2 && echo "client/D/2 ok"
+cmp $F/D/3 client/D/3 && echo "client/D/3 ok"
+cmp $F/D/D/1 client/D/D/1 && echo "client/D/D/1 ok"
+cmp $F/D/D/2 client/D/D/2 && echo "client/D/D/2 ok"
+cmp $F/D/D/3 client/D/D/3 && echo "client/D/D/3 ok"
+
+echo '--- ftpcopy --max-depth works'
+rm -rf client/* $F/*
+mkdir $F/D1
+cp $O/ftpcopy.c $F/1
+mkdir $F/D1/D2
+cp $O/ftpcopy.c $F/D1/2
+mkdir $F/D1/D2/D3
+cp $O/ftpcopy.c $F/D1/D2/3
+cp $O/ftpcopy.c $F/D1/D2/D3/4
+echo '- part zero: --max-depth 0'
+rm -rf client/
+$O/ftpcopy --max-depth 0 -l 0 127.0.0.1:50000 / client
+find client -print | sort
+echo '- part one: --max-depth 1'
+rm -rf client/
+$O/ftpcopy --max-depth 1 -l 0 127.0.0.1:50000 / client
+find client -print | sort
+echo '- part two: --max-depth 2'
+rm -rf client/
+$O/ftpcopy --max-depth 2 -l 0 127.0.0.1:50000 / client
+find client -print | sort
+echo '- part three: --max-depth 3'
+rm -rf client/
+$O/ftpcopy --max-depth 3 -l 0 127.0.0.1:50000 / client
+find client -print | sort
+
+echo '--- ftpcopy --rate-limit works'
+rm -rf client/* $F/*
+cat >a5.c <<EOF
+int main(int argc, char **argv)
+{ 
+  /* made even more complicated so that the shell never sees the 
+   * alarm signal.
+   */
+  int x=fork();
+  int y;
+  if (x==0) {
+    alarm(5); execv(argv[1],argv+1); _exit(1);
+  }
+  x=wait(&y);
+  return 0;
+}
+EOF
+$O/auto-compile.sh -o a5 a5.c 
+cat $O/ftpcopy $O/ftpls $O/*.c >>$F/file
+(
+  exec 2>/dev/null
+  exec 1>/dev/null
+  ./a5 $O/ftpcopy --rate-limit 5000 -l 0 ftp://127.0.0.1:50000/file client/
+) >/dev/null 2>/dev/null # need to get rid of "alarm clock" messages of sh.
+cmp client/file $F/file >/dev/null 2>/dev/null \
+  && echo "files identical - rate limiting does not work"
+
+echo '--- ftpcopy resumes downloads'
+rm -rf client/* $F/*
+touch $F/file
+cat $O/ftpcopy $O/ftpls $O/*.c >>$F/ofile
+dd if=$F/ofile of=$F/file bs=1024 count=100 >/dev/null 2>/dev/null
+./onetouch 946753000 $F/file
+TFILE=.tmp.file.946753000.102400
+
+dd if=$F/file of=$F/$TFILE bs=1024 count=24 >/dev/null 2>/dev/null
+cp $F/$TFILE client/
+$O/ftpcopy ftp://127.0.0.1:50000/file client/
+
+echo '--- ftpcopy resume does not detect local corruption'
+# this actuelly tests wether there is a resume at all ...
+rm -f client/*
+./onetouch 946753000 $F/file
+cp $F/$TFILE client/
+echo 1 >>client/$TFILE
+$O/ftpcopy ftp://127.0.0.1:50000/file client/
+cmp client/file $F/file >/dev/null 2>/dev/null \
+  || echo "file corrupted - resume done"
+echo '--- ftpcopy does not resume in case time changed'
+rm -f client/*
+./onetouch 946753200 $F/file
+cp $F/$TFILE client/
+$O/ftpcopy ftp://127.0.0.1:50000/file client/
+cmp client/file $F/file
+echo '--- ftpcopy does not resume in case size changed'
+cp $F/$TFILE client/
+echo 1 >>$F/file
+./onetouch 946753200 $F/file
+$O/ftpcopy ftp://127.0.0.1:50000/file client/
+cmp client/file $F/file
+
+echo '--- ftpcopy --no-resume works as expected'
+rm -f client/file
+echo 123 >client/file
+dd conv=notrunc if=$F/file of=client/file bs=1024 count=30 \
+  >/dev/null 2>/dev/null
+$O/ftpcopy --no-resume ftp://127.0.0.1:50000/file client/
+cmp client/file $F/file
+
+svc -dtx $N/server/ftpd
+sleep 1 # give supervise time to exit. otherwise race with supervise/status file
+#cat $N/server.log |grep -v ^tcpserver
+rm onetouch
+
+cd $O || exit 1
+rm -rf tmp.check
+
+exit 0

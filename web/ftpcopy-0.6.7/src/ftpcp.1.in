@@ -1,0 +1,37 @@
+.TH ftpcp 1 \*(VE \*(PA
+.hy 0
+.URL "Uwe Ohse" ../uwe.html
+.br
+.URL "The ftpcopy package" ../ftpcopy.html
+.paragraph
+.SH NAME
+ftpcp - copy files from a FTP server to the local machine
+.LINE
+.section SYNOPSIS
+ftpcp ftp://host[:port]/directory local-dir
+.paragraph
+or
+.paragraph
+ftpcp host[:post] /directory local-dir
+.section DESCRIPTION
+\fBftpcp\fR is a frontend to the \fBftpcopy\fR program. Calling
+.paragraph
+  ftpcp arguments ...
+.paragraph
+has exactly the same results as calling
+.paragraph
+  ftpcopy -n arguments ...
+.paragraph
+or, in other words: \fBftpcp\fR calls \fBftpcopy\fR \fI-n\fR, so that files
+already in the local directory are not deleted.
+.section AUTHOR
+Uwe Ohse, uwe@ohse.de
+.section "SEE ALSO"
+.manlink ftpls.html ftpls(1) ,
+.manlink ftpcopy.html ftpcopy(1) .
+.HTML <!--
+.paragraph
+The homepage may be more up-to-date, see
+.br
+http://www.ohse.de/uwe/ftpcopy.html.
+.HTML -->

@@ -1,0 +1,724 @@
+2004-08-10	Uwe Ohse <uwe@ranan.ohse.de>
+
+portab:   work around gcc-3.4 (and suse gcc-3.3.3) regparm incompatability.
+          (noted by Matthias Andree)
+bugfix:   ftpcopy --help showed duplicate entries for -4, -6 (Thomas Schwinge).
+internal: sync against repository.
+doc:      install.0.in fixed (forgot "web" in paths) (Thomas Schwinge).
+version:  0.6.7
+
+2004-08-04	Uwe Ohse <uwe@ranan.ohse.de>
+
+version:  0.6.6
+
+2004-07-27	Uwe Ohse <uwe@ranan.ohse.de>
+
+check:    now tries to find posix UTC timezone, self check should work 
+          again on systems using right/UZC as default UTC.
+internal: rewrote canon(), check what it does in self check.
+internal: sync against repository, mainly buffer_op_t -> buffer_op rename.
+          This forced some changes in the code.
+version:  0.6.6beta2
+
+2004-07-26	Uwe Ohse <uwe@ranan.ohse.de>
+
+ui:       added --eat-leading-spaces option to ftpcopy and ftpls.
+ui:       added --data-connect-retries option to ftpcopy and ftpls.
+ui:       added -X, --in-exclude-file option to ftpcopy (idea: duncan brown).
+doc:      bug: compile/systype should be compile/auto-systype now
+          (noted by Clemens Fischer).
+check:    added another 'Alarm signal' workaround.
+
+2004-07-25	Uwe Ohse <uwe@ranan.ohse.de>
+
+portab:   FreeBSD hat publicfile in just another place (Matthias Andree).
+bug:      fix ftpls file size output (64bit now).
+internal: changed types of lengths used by ftpparse to unsigned.
+internal: rename logxxx to do_logxxx.
+bug:      cleanup symlink handling (suggested by multiple persons).
+bug:      --tolower was't taken into account for the in/exclude matching
+          (noted by Mike Pastore).
+
+2003-09-19	Uwe Ohse <uwe@ranan.ohse.de>
+
+bug:      socket_family.c assumed all systems know AF_INET6.
+portab:   tr might treat tr -A-Z _a-z as option [find_socket_func.sh]
+bug:      --raw option doesn't take an argument. [ftpls.c]
+version:  0.6.5
+
+2003-08-12	Uwe Ohse <uwe@ranan.ohse.de>
+
+bug:      urlparse() was too strict and refused ftp urls w/o trailing path.
+ui:       ftpls now accepts host names without a remote path.
+
+2003-07-31	Uwe Ohse <uwe@ranan.ohse.de>
+
+ui:       package.finish ignores already existing directories to allow
+          package.install to be run multiple times.
+version:  0.6.4
+
+2003-07-29	Uwe Ohse <uwe@ranan.ohse.de>
+
+internal: switch to new uogetopt version to generate manuals from the 
+          help texts.
+internal: quite a number of library files updated from the repository.
+bug:      ftpls didn't append a / to directory names in html output,
+          thus creating invalid links.
+version:  0.6.3
+
+2003-02-03	Uwe Ohse <uwe@ranan.ohse.de>
+
+package:  package/build: new script.
+internal: split iopause.h into fixed and automatically generated parts.
+internal: switch to conditionalized premake2 system.
+version:  0.6.2
+
+2003-01-28	Uwe Ohse <uwe@ranan.ohse.de>
+
+bugfix:  ftpparse ate leading spaces in file names (unix).
+bugfix:  ftpparse ate leading spaces in file names (msdos, when nt in disguise)
+         both noted by "chip" <demas@gmx.net>.
+check:   check these cases.
+bugfix:  docheck used `pwd` instead of `env - pwd`. Impact: check might fail.
+
+2003-01-27	Uwe Ohse <uwe@ranan.ohse.de>
+
+version:  0.6.1
+
+2003-01-27	Uwe Ohse <uwe@ranan.ohse.de>
+
+internal: ftpcopy now sorts the directory listings. impact: self check
+          works on file systems re-ordering the files, too.
+ui:       --progress option is now sensitive to the terminal size.
+bugfix:   make sure that the 100% message for --progress is printed. I didn't 
+          really see a need for this, when i coded the initial code. 
+	  Impact: surprised users.
+check:    removed reasons to clear the environment before running docheck.
+ui:       the --allow-pasv-ip option and the FTPCOPY_ALLOW_PASV_IP environment
+          variable allow to work around the "illegal redirect" error in 
+	  case ftpcopy is used behind a NAT gateway. 
+	  Chances: ftpcopy.c,ftpls.c, common.c
+internal: let ftpls use ssort, too.
+
+2003-01-24	Uwe Ohse <uwe@ranan.ohse.de>
+
+portab:   pdksh may exit after subshell calls when "set -e" is in effect.
+          impact: compilation broken. Workaround by Paul Jarc.
+
+2003-01-12	Uwe Ohse <uwe@ranan.ohse.de>
+
+bugfix:   --mdtm didn't work. Impact: bad dates.
+bugfix:   the result of mdtm was not used correctly. Thanks to Philip Ross.
+bugfix:   error.h not included in a few socket library files. 
+          Imfact: did not compile.
+internal: removed a number of warnings.
+internal: removed a number of warnings.
+change:   DNS library now continues even if the machine does not support the 
+          IP protocol needed to reach all name servers. this allows to share
+	  the resolv.conf...
+change:   use 127.0.0.1 as nameserver of last resort, too, not only ::1.
+
+2003-01-11	Uwe Ohse <uwe@ranan.ohse.de>
+
+ui:       more informative "illegal redirect" message.
+
+2003-01-09	Uwe Ohse <uwe@ranan.ohse.de>
+
+ui:       document -4, -6 options.
+version:  0.6.0
+
+2003-01-08	Uwe Ohse <uwe@ranan.ohse.de>
+
+ui:       implemented download resume.
+ui:       implemented progress report.
+portab:   glibc-2.3 includes stub for futimes(), thus breaking api_futimes.
+          workaround.
+
+2002-10-17	Uwe Ohse <uwe@ranan.ohse.de>
+
+internal: switch to ipv6 enabled dns library.
+internal: switch to ipv6 enabled socket library.
+version:  0.5.9 - not for release.
+
+2002-10-15	Uwe Ohse <uwe@ranan.ohse.de>
+
+ui:       added --max-depth option to ftpcopy and ftpls.
+check:    check this.
+version:  0.5.2.
+
+2002-10-15	Uwe Ohse <uwe@fjoras.ohse.de>
+
+internal: open tempory file using open_excl, not open_trunc anymore.
+
+2002-10-06	Uwe Ohse <uwe@ranan.ohse.de>
+
+internal: update bailout.c, bailout.h from the repository.
+bugfix:   ftp_cc_read did not clear the string before starting.
+bugfix:   ccread could return both NULL and &('\0') in case of EOF.
+          It now returns NULL.
+
+2002-10-05	Uwe Ohse <uwe@ranan.ohse.de>
+
+compat:   added --ascii-listings option to ftpcopy and ftpls. Purpose: Work
+          around FTP servers unable to list long directories in binary mode.
+          Noted by A. P. Garcia.
+check:    check that.
+
+2002-07-31	Uwe Ohse <uwe@ranan.ohse.de>
+
+ui:       added better handling of shortened remote times to ftpcopy. 
+          impact: should solve the "reget after a half year" problem.
+          No check done, publicfile is just too good for this.
+check:    check the --max-size option.
+version:  0.5.1
+
+2002-07-30	Uwe Ohse <uwe@ranan.ohse.de>
+
+ui:       added --max-size option to ftpcop
+bugfix:   one case where a directory has turned into a symlink wasn't caught.
+internal: change symlink guessing to use new ftpparse features.
+bugfix:   make a difference between EOF and errors at a few places.
+
+2002-07-14	Uwe Ohse <uwe@ranan.ohse.de>
+
+internal: extended auto-systype information.
+ui:       changed a number of scripts to allow parallel make.
+internal: added a number of copyright notices.
+
+2002-07-13	Uwe Ohse <uwe@fjoras.ohse.de>
+
+internal: replaced dns library by public domain one.
+internal: updated LICENSES.LOCAL, LICENSES.HEAD.
+version:  0.5.0 (not released)
+
+2002-07-13	Uwe Ohse <uwe@ranan.ohse.de>
+
+ui:       replaced the ftp listing parser by a rewritten, extended one.
+check:    check this.
+internal: use utcdate2tai where possible, thereby eleminating the need
+          for mktime, thus also eliminating the need for tzset and
+          setenv("TZ","UTC",...), which was the most broken thing in
+          ftpcopy anyway.
+
+2002-07-11	Uwe Ohse <uwe@fjoras.ohse.de>
+
+check:    add check whether ftpparse works as expected.
+
+2002-07-11	Uwe Ohse <uwe@ranan.ohse.de>
+
+version:  0.4.10
+
+2002-07-10	Uwe Ohse <uwe@ranan.ohse.de> after 0.4.9
+
+bugfix:   fixed a crash on systems without setenv.
+
+2002-07-10	Uwe Ohse <uwe@ranan.ohse.de>
+
+ui:       --dry-run now shows what would be deleted, to.
+check:    check that.
+ui:       work around a problem with a wu-2.4.2-VR16(1) server, where
+          it didn't provide a directory listing. impact: ftpcopy stopped.
+bugfix:   ftp_cc_read failed to report errors. impact: wrong error message.
+portab:   do not use setenv directly, use a wrapper (setenv/putenv).
+portab:   Makefile is now dmake compatible, and possibly even usable with
+          HPUX make.
+internal: updated a number of library files from the repository.
+version:  0.4.9
+
+2002-03-15	Uwe Ohse <uwe@fjoras.ohse.de>
+
+portab:   do not use tm_gmtoff and tm_zone anymore. Noted by a number of
+          users.
+portab:   a number of FTP servers sends malformed MLSx responses. This 
+          likewise bit a number of users.
+portab:   "fi fi" without a ";" between is unportable. Noted by Janos Farkas.
+
+2002-01-22	Uwe Ohse <uwe@fjoras.ohse.de>
+
+version:  0.4.8
+portab:   do not use ${1+$@} anymore, but use $@. /bin/sh on mac os x broke
+          auto-compile.sh.
+portab:   redirect linkers stdout to stderr in auto-link.sh. mac os x linker
+          thinks the error messages belong to stdout. 
+portab:   mac os x needs sys/types.h included before sys/dirent.h.
+
+2002-01-15	Uwe Ohse <uwe@fjoras.ohse.de>
+
+bugfix:   ftpls in recursive mode chopped the first character of the directory
+          name. First noted by Roland Mücke.
+version:  0.4.7
+
+2002-01-04	Uwe Ohse <uwe@fjoras.ohse.de>
+
+bugfix:   fix missing initialization in --rate-limit option.
+
+2002-01-03	Uwe Ohse <uwe@fjoras.ohse.de>
+
+ui:       added --rate-limit option to ftpcopy.
+
+2001-12-16	Uwe Ohse <uwe@fjoras.ohse.de>
+
+bugfix:   updated fsync.sh and iopause.sh from the repository.
+          impact: no dependency on compile.sh anymore.
+ui:       added --raw option to ftpls.
+ui:       added --print-dir option to ftpls.
+version:  0.4.6
+
+2001-12-11	Uwe Ohse <uwe@fjoras.ohse.de>
+
+internal: use api_dir instead of dirent.h
+ui:       reordered and grouped --(long)?help output
+ui:       added -M, --max-deletes option
+ui:       --login-sleep option
+version:  0.4.5
+
+2001-12-01	Uwe Ohse <uwe@fjoras.ohse.de>
+
+compat:   some FTP server closed the data connection after a failed
+          RETR ("not a plain file").
+bugfix:   initialentity returned the wrong value after MLST, causing
+          a superfluous RETR command. Impact: failed on the servern
+          which closed the data connection too early.
+          Noted by a. Phil Garcia.
+
+2001-11-16	Uwe Ohse <uwe@fjoras.ohse.de>
+
+bugfix:   ftpls will no longer follow endless symbolic link loops.
+internal: updated a number of files from the repository (auto-... change).
+internal: adapted docheck (use of compile.sh).
+
+2001-11-14	Uwe Ohse <uwe@fjoras.ohse.de>
+
+bugfix:   mlsx.c prepended space before name. Patch from Matthias Andree.
+ui:       added options not to download files if the modification time or
+          the file sizes have changed.
+doc:      documented that.
+check:    check that.
+version:  0.4.4
+
+2001-09-04	Uwe Ohse <uwe@fjoras.ohse.de>
+
+version:  0.4.3
+bugfix:   the workaround for missing utimes() didn't work.
+
+2001-09-02	Uwe Ohse <uwe@fjoras.ohse.de>
+
+version:  0.4.2
+ui:       added some information to the ftpcopy --longhelp output.
+
+2001-08-30	Uwe Ohse <uwe@fjoras.ohse.de>
+
+internal: provide function to read command channel line by line (for MLST)
+internal: added code for using MLST on initial entity.
+bugfix:   MLSx can return 500, means the same as 502. 
+          Impact: ftpls and ftpcopy behaved somewhat strangely.
+version:  0.4.2beta2
+
+2001-08-29	Uwe Ohse <uwe@fjoras.ohse.de>
+
+internal: updated a number of files from the repository.
+internal: changed strhash_t -> strhash.
+internal: extended systype output.
+internal: more sort_it() from ftpls.c to own file.
+internal: cleaned up includes.
+internal: compile even if utimes() is not available.
+ui:       if ftpcopy detects that a file locally exists, but it is a link
+          on the remote server, then create a link locally.
+ui:       added support for MLSD.
+version:  0.4.2beta1
+
+2001-08-13	Uwe Ohse <uwe@fjoras.ohse.de>
+
+check:    touch -t YYYYMMDDhhmm.ss doesn't work with GNU fileutils 3.16,
+          it expects a different format. Impact: self check failed.
+          Workaround: use own touch.
+version:  0.4.1
+
+2001-08-01	Uwe Ohse <uwe@fjoras.ohse.de>
+
+interal:  updated socket_conn.c socket_htons.c socket_bind.c from repo.
+
+2001-07-22	Uwe Ohse <uwe@fjoras.ohse.de>
+
+ui:       switched to new build / package system.
+version:  0.4.0
+
+2001-07-13	Uwe Ohse <uwe@fjoras.ohse.de>
+
+internal: updated bailout.c, bailout.h, buffer_put.c, open.h, uint64.h,
+          uogetopt.c, iopause.c from the repository.
+internal: switch ftpls.c to byte_diff, str_len.
+internal: switch urlparse.c to str_len.
+internal: use noreturn attributes where useful.
+ui:       added --mdtm switch to ftpcopy.
+version:  0.3.10
+
+2001-07-03	Uwe Ohse <uwe@fjoras.ohse.de>
+
+doc:      s/post/port/ in ftpcopy.1.in, spotted by Jim Thompson 
+          <jim@smallworks.com>.
+
+2001-06-03	Uwe Ohse <uwe@csl42.csl.de>
+
+doc:      switched to *roff.
+
+2001-06-01	Uwe Ohse <uwe@csl42.csl.de>
+
+ui:       ftpcopy --bps logs the transfer rates.
+
+2001-05-30	Uwe Ohse <uwe@csl42.csl.de>
+
+bugfix:   fixed two file descriptor leaks created 2001-05-03
+          Spotted by <matthias.andree@stud.uni-dortmund.de>.
+check:    check for file descriptor leak problems.
+version:  0.3.9
+
+2001-05-22	Uwe Ohse <uwe@csl42.csl.de>
+
+portab:   socks5 as of socks5-v1.0r11 doesn't include a wrapper for 
+          poll, but has one for select influencing internal state in
+          the SOCKS library. Impact: ftpcopy / ftpls couldn't connect.
+          Workaround: added an option --force-select to both clients.
+doc:      documented --force-select
+
+2001-05-17	Uwe Ohse <uwe@csl42.csl.de>
+
+bugfix:   iopause.sh did never turn on poll. (never released that bug)
+
+2001-05-11	Uwe Ohse <uwe@fjoras.ohse.de>
+
+bugfix:   ftpcopy crashed with a null pointer dereference if a high 
+          logging level was choosen and the default end (NULL) of
+          a in/exclude list was reached.
+
+2001-05-08	Uwe Ohse <uwe@fjoras.ohse.de>
+
+ui:       cd back from sub directories as soon as they are left.
+          impact: temporary files are created in the target directory.
+          the old behaviour wasn't clean with regards to file system
+          boundaries. Brought to my attention by Matthias Andree 
+          <matthias.andree@stud.uni-dortmund.de>.
+internal: updated typesize.h from the repository. No impact.
+internal: updated gen_scan.h from the repository. No impact.
+
+2001-05-03	Uwe Ohse <uwe@fjoras.ohse.de>
+
+internal: switched to PD tai and taia libraries.
+internal: switched to PD ip4 library.
+internal: switched to PD iopause.
+bug:      printed errno related error messages without reason. Brought to 
+          my attention by Matthias Andree <matthias.andree@gmx.de>.
+ui:       added --recursive option to ftpls.
+
+2001-05-02	Uwe Ohse <uwe@fjoras.ohse.de>
+
+internal: switched to PD scan library.
+
+2001-05-01	Uwe Ohse <uwe@fjoras.ohse.de>
+
+internal: switched to PD fmt library.
+internal: switched to PD ndelay.
+
+2001-04-30	Uwe Ohse <uwe@fjoras.ohse.de>
+
+internal: switched to use more generic host_connect() instead of doconnect().
+internal: switched to PD timeoutconn.
+internal: switched to PD error library.
+
+2001-04-29	Uwe Ohse <uwe@fjoras.ohse.de>
+
+internal: switched to PD readclose library.
+internal: switched to PD readwrite.h.
+internal: switched to PD uint library.
+internal: switched copyright of byte* to PD.
+internal: updated uoinstall from the repository.
+
+2001-04-26	Uwe Ohse <uwe@fjoras.ohse.de>
+
+internal: switched to PD buffer library.
+internal: switched to PD getln library.
+
+2001-04-22	Uwe Ohse <uwe@fjoras.ohse.de>
+
+ui:       add --tolower option to ftpcopy.
+doc:      document that.
+check:    check that.
+
+2001-04-21	Uwe Ohse <uwe@fjoras.ohse.de>
+
+ui:       add --timeout option to ftpcopy and ftpls.
+doc:      document that.
+ui:       if the server has more than one IP address then try
+          to connect to all of them before failing.
+bugfix:   Only accept PASV IP address if it's in the list returned
+          by the DNS. Only accept port 20 and >= 1024.
+          Impact: don't allow the server to redirect us to chargen
+          or something else.
+version:  0.3.8 
+
+2001-04-14	Uwe Ohse <uwe@fjoras.ohse.de>
+
+ui:       ftpls error messages in case too few arguments were given
+          weren't helpful.
+doc:      updated TODO.
+internal: built an API around futimes/utimes to hide that ugly stuff.
+bug:      fixed a one byte overrun of a malloc()d buffer in do_symlink. 
+          it was there for a long, long time.
+          impact: unknown. doesn't seem to be exploitable, though.
+
+2001-04-09	Uwe Ohse <uwe@fjoras.ohse.de>
+
+doc:      updated install.html.in to reflect testsuite
+doc:      updated ftpcopy.pod: moved --keep-dir and --remove-dir
+          into historical section.
+internal: removed unneeded includes in ftplib.c, ftpls.c and ftpcopy.c.
+internal: use wrapper around getcwd.
+ui:       changed some error messgaes in ftpls.
+ui:       use absolute paths in ftpls interactive mode, too.
+
+2001-04-08	Uwe Ohse <uwe@serak.ohse.de>
+
+check:    improved testsuite.
+ui:       removed --remove-dir and --keep-dir options in ftpcopy.
+          The behaviour of --remove-dir is now default.
+internal: made remove_dir() in ftpcopy.c more robust.
+bug:      --directories-only now works again.
+internal: restructured loop() by moving code to new functions.
+ui:       Added more logging to the handling of include/exclude options.
+bug:      Deal with the case where the remote entity is a directory, but 
+          the local one is a symlink, by removing the symlink.
+bug:      Try to get more information if the initial entity is a directory.
+ui:       changed a number of error messages in common.c.
+ui:       relative remote paths in interactive input are changed into
+          absolute ones.
+bug:      Don't crash in interactive/non-url mode due to unset remotedir 
+          variable. In interactive/non-url mode no remote directory is 
+          needed.
+internal: removed unneeded flag_silent_retr hack.
+
+2001-04-07	Uwe Ohse <uwe@serak.ohse.de>
+
+internal: updated bailout.[ch].
+ui:       ftpcopy sets up bailout library to print "fatal: " in 
+          fatal messages.
+ui:       changed a number of error messages in doconnect.c.
+ui:       changed a number of error messages in ftpcopy.c.
+bug:      ftpcopy exited with an error "wrong initial LIST answer"
+          if the remote target was a file. (introduced yesterday)
+bug:      ftpcopy didn't create to local directories for the initial
+          targets as it was supposed to do (at least in some cases)
+          (bug introduced in 0.3.6)
+bug:      ftpcopy now handles a few more cases in which a remote file 
+          has turned into a directory or a directory has turned into 
+          a file.
+check:    expanded testsuite.
+
+2001-04-06	Uwe Ohse <uwe@serak.ohse.de>
+
+internal: replaced stralloc library by GPLd one.
+check:    started work on testsuite.
+bug:      ftpcopy.c: rewrote the special handling of the command line
+          argument. Too many bugs in the old code.
+          Also fixed misformatted rename error messages.
+version:  0.3.7
+
+2001-03-27	Uwe Ohse <uwe@fjoras.ohse.de>
+
+bug:      use stat in download(), not lstat. we want to compare the real
+          things. (spotted by Nagy Erno <ned@elte.hu> a long time ago)
+ui:       implemented --interactive options in ftpcopy and ftpls.
+version:  0.3.6
+
+2001-03-26	Uwe Ohse <uwe@fjoras.ohse.de>
+
+bug:      ftpcopy failed to copy an initial remote directory on a wu-ftpd 
+          server if that directory contained exactly one file. ftpcopy
+          also failed to copy empty directories.
+bug:      ftpcopy didn't create local directory if the first entity
+          to be copied was a file.
+
+2001-02-26	Uwe Ohse <uwe@fjoras.ohse.de>
+
+ui:       ftpcopy.c: added --dry-run option.
+bug:      bailout_progname() threw away the first character if
+          argv[0] didn't include a /.
+
+2001-02-16	Uwe Ohse <uwe@fjoras.ohse.de>
+
+internal: use new uogetopt functions (MINARGS, MAXARGS).
+internal: use bailout_progname().
+ui:       ftpcopy.c: make help messages more clear.
+ui:       ftpcopy.c: document default of local-dir to .
+ui:       ftpcopy.c: make that default only apply if -n is used.
+doc:      document default of local-dir to "." if "-n" is used.
+version:  0.3.5
+
+2001-02-14	Uwe Ohse <uwe@fjoras.ohse.de>
+
+bug:      ftpcopy --version showed "--version" as program name
+          if and only if ftpcopy wasn't calling with an absolute path 
+          in argv[0]. This also affects error messages.
+internal: updated scan_long.c, scan_sign.c, strhash_ente.c, uogetopt.c
+          and uogetopt.h from the repository.
+
+2001-01.14	Uwe Ohse <uwe@fjoras.ohse.de>
+
+portability: some version of reiserfs on linux doesn't honor utime() if
+             the function is called before the file is closed. Found
+             and patched by Felix von Leitner <leitner@fefe.de>.
+             impact: the date of mirrored files was wrong.
+internal:    now actually use futimes() if available.5
+internal:    updated socket_tcp.c socket_udp.c strhash_ente.c from the
+             repository.
+ui:          implemented "--account" option: send argument to the server
+             if it asks for an ACCT command. impact: common.c, ftpcopy.h
+             ftpls.c, ftpcopy.c.
+version:     0.3.4
+
+2000-10-02	Uwe Ohse <uwe@serak.ohse.de>
+
+bugfix:   no validity check on remote files names was done.
+          impact: security breach if the FTP server uses names like
+          ../../../../etc/passwd. Solution: ignore files with / in the name.
+
+2000-09-21	Uwe Ohse <uwe@serak.ohse.de>
+
+version:  0.3.3
+internal: use new strhash version. changed ftpcopy.c to fit.
+internal: updated uogetopt from repository.
+bugfix:   a log message was missing a terminating line feed.
+bugfix:   timeoutio.h: experimental change for the ^z problem experienced by
+          Matthias Andree <matthias.andree@stud.uni-dortmund.de>.
+
+2000-09-03	Uwe Ohse <uwe@serak.ohse.de>
+
+internal: updated uogetopt from repository.
+internal: updated uoinstall from repository.
+internal: removed strlen calls from ftpcopy.c.
+version:  0.3.2
+doc:      fix spurious comma in ftpcp.pod. (spotted by Matthias Andree)
+bugfix:   don't flush before \r\n in ftp_cc_write_cmd_s and
+          ftp_cc_write_cmd_ss. Was due to a misunderstanding
+          of the way buffer_pustflush works.
+          impact: old proftpd version crash, unneeded TCP traffic.
+          Spotted by Matthias Andree <matthias.andree@gmx.de>.
+internal: use strhash instead of dynhash. impact: avoid possibly
+          CRC collision problems.
+
+2000-08-11	Uwe Ohse <uwe@serak.ohse.de>
+
+ui:       ftpparse.c didn't know about the format used on at least
+          one IP address behind ftp.nai.com.
+
+2000-08-10  Uwe Ohse  <uwe@serak.ohse.de>
+
+internal: shut up a gcc warning in ftpcopy.c
+internal: understands the listing format of ftp.nai.com.
+bugfix:   used buggy old env_get (didn't hit, due to luck).
+ui:       oom() exists 111 (bailout.c)
+internal: timeoutio.h, open.h: library sync
+ui:       (uoinstall, premake) a number of make variables
+          may influence the installation.
+version:  0.3.1
+
+2000-08-08  Uwe Ohse  <uwe@serak.ohse.de>
+
+bugfix:   ftpcopy logged empty wildcard expression in case of exclusion
+          (spotted by Matthias Andree <ma@dt.e-technik.uni-dortmund.de>).
+doc:      fix typo in ftpcopy.pod. (spotted by Matthias Andree)
+
+2000-07-15  Uwe Ohse  <uwe@serak.ohse.de>
+
+internal: rewritten to use stralloc, taia.a, buffer, the new socket library.
+ui:       provide a way to not log in (--user="").
+ui:       ftpcp: new script, calls `ftpcopy -n "$@"'
+ui:       added --tries option.
+ui:       fixed exit code of ftpcopy, was 1 instead of 0 in case of
+          success.
+version:  0.3.0
+
+2000-06-10  Uwe Ohse  <uwe@serak.ohse.de>
+
+bugfix:  directory deletions didn't work.
+ui:      added --include option.
+
+2000-05-18  Uwe Ohse  <uwe@serak.ohse.de>
+
+ui:      add option "-L" / "--list-options" to ftpcopy and ftpls.
+ui:      fix typo in long options of ftpls.
+bugfix:  ftpls didn't correctly check the result code of the
+         LIST command.
+
+2000-02-15  Uwe Ohse  <uwe@serak.ohse.de>
+
+    * library function updates (mainly the big uoio cleanup).
+    * threw out automake / autoconf stuff.
+    * ftpcopy: target may now be a relative path.
+    * ftpls: can now list only one file.
+    * Release 0.2.2 (0.2.1 was internal)
+
+2000-02-08  Uwe Ohse  <uwe@serak.ohse.de>
+
+    * Release 0.2.0
+
+    * ftpcopy.c: (download) forgot to close the socket if
+      the server tells us that the file is not available.
+
+    * ftpcopy.c: (delete) stopped to work reliably in 0.1.3. Oops.
+
+    * uoio.c, uostr.c: library function update. Nothing serious.
+
+2000-01-17  Uwe Ohse  <uwe@serak.ohse.de>
+
+    * Release 0.1.3
+
+    * ftplib.c: new file containing some functions of ftpcopy.c
+
+    * ftpcopy.c: use ftplib.c functions.
+      understands URLs.
+      doesn't need a local dir anymore (uses ./something).
+
+    * ftpparse.c: ANSIfied it.
+
+    * ftpls.c: new program
+
+2000-01-16  Uwe Ohse  <uwe@serak.ohse.de>
+
+    * ftpcopy.c: new option -m / --max-days to only download files
+      modified in the last N days.
+      new option -x / --exclude, implements exclusion list.
+      added some rmdirs where they seem appropriate.
+
+    * uptime.h, uo_now.c, uo_wildmat.h uo_wildmat.c: new files
+      from the repository.
+
+2000-01-15  Uwe Ohse  <uwe@serak.ohse.de>
+
+    * ftpcopy.c: close the data connection before reading the servers
+      final answer. Seems to be needed for some ftp servers (what
+      does the standard say about that?).
+
+2000-01-14  Uwe Ohse  <uwe@serak.ohse.de>
+
+    * Release 0.1.2
+    * ftpcopy.c: implemented option to deal with symbolic links
+      on broken ftp servers.
+      implemented option to only create the directory hierarchie
+      (together with the option mentioned above it will also
+      create symbolic links).
+      deal with multiline FTP responses.
+      fixed a bug in the symlink creation function (used by EPLF
+      and traditional stuff).
+      use null terminated strings everywhere.
+
+2000-01-13  Uwe Ohse  <uwe@serak.ohse.de>
+
+    * Release 0.1.1
+      (0.1.0 was used internally)
+
+2000-01-12  Uwe Ohse  <uwe@serak.ohse.de>
+
+    * internal Release 0.1.0
+
+
+

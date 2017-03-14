@@ -1,0 +1,2180 @@
+--- canon works as expected
+in : /files/dir/test.jpg:
+out: /files/dir/test.jpg:
+in : /files/dir/../test.jpg:
+out: /files/test.jpg:
+in : /files/dir/../dir2/test.jpg:
+out: /files/dir2/test.jpg:
+in : /files/dir/../../test.jpg:
+out: /test.jpg:
+in : /files/dir/../../files2/dir2/test.jpg:
+out: /files2/dir2/test.jpg:
+in : /files/dir/../../../files2/dir2/test.jpg:
+out: /files2/dir2/test.jpg:
+in : ../files2/dir2/test.jpg:
+out: files2/dir2/test.jpg:
+in : /../files2/dir2/test.jpg:
+out: /files2/dir2/test.jpg:
+in : /f/d/../f2/x:
+out: /f/f2/x:
+in : /f/../../d/x:
+out: /d/x:
+in : /f/d/../../x:
+out: /x:
+in : ../x:
+out: x:
+in : /files/dir/../../../files2/dir2/test.jpg:
+out: /files2/dir2/test.jpg:
+in : files/dir/../../../files2/dir2/test.jpg:
+out: files2/dir2/test.jpg:
+--- ftpparse works as expected
+# generic scan_time checks.
+in: 04-27-99   7:28:39       <DIR>          licensed:
+  name: licensed
+  namelen: 8
+  may be directory
+  size: unknown
+  mtimetype: 4
+  mtime: 925198119 Tue Apr 27 07:28:39 1999
+  id: unknown
+in: 04-27-99  07:28:39       <DIR>          licensed:
+  name: licensed
+  namelen: 8
+  may be directory
+  size: unknown
+  mtimetype: 4
+  mtime: 925198119 Tue Apr 27 07:28:39 1999
+  id: unknown
+in: 04-27-99  17:28:39       <DIR>          licensed:
+  name: licensed
+  namelen: 8
+  may be directory
+  size: unknown
+  mtimetype: 4
+  mtime: 925234119 Tue Apr 27 17:28:39 1999
+  id: unknown
+in: 04-27-99  07:28:39AM     <DIR>          licensed:
+  name: licensed
+  namelen: 8
+  may be directory
+  size: unknown
+  mtimetype: 4
+  mtime: 925198119 Tue Apr 27 07:28:39 1999
+  id: unknown
+in: 04-27-99  07:28:39PM     <DIR>          licensed:
+  name: licensed
+  namelen: 8
+  may be directory
+  size: unknown
+  mtimetype: 4
+  mtime: 925241319 Tue Apr 27 19:28:39 1999
+  id: unknown
+in: 04-27-99   7:28          <DIR>          licensed:
+  name: licensed
+  namelen: 8
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 925198080 Tue Apr 27 07:28:00 1999
+  id: unknown
+in: 04-27-99  07:28          <DIR>          licensed:
+  name: licensed
+  namelen: 8
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 925198080 Tue Apr 27 07:28:00 1999
+  id: unknown
+in: 04-27-99  07:28AM        <DIR>          licensed:
+  name: licensed
+  namelen: 8
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 925198080 Tue Apr 27 07:28:00 1999
+  id: unknown
+in: 04-27-99  07:28PM        <DIR>          licensed:
+  name: licensed
+  namelen: 8
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 925241280 Tue Apr 27 19:28:00 1999
+  id: unknown
+# bad things
+in: 04-27-99    :28:39       <DIR>          licensed:
+  unparsable
+
+in: 04-27-99    :28          <DIR>          licensed:
+  unparsable
+
+in: 04-27-99   7:2:39       <DIR>          licensed:
+  unparsable
+
+in: 04-27-99  07:28:3       <DIR>          licensed:
+  unparsable
+
+in: 04-27-99  17:28:       <DIR>          licensed:
+  unparsable
+
+in: 04-27-99  007:28:39       <DIR>          licensed:
+  unparsable
+
+in: 04-27-99  07:028:39       <DIR>          licensed:
+  unparsable
+
+in: 04-27-99  07:28:039       <DIR>          licensed:
+  unparsable
+
+in: 04-27-99  07:28:039AM     <DIR>          licensed:
+  unparsable
+
+in: 04-27-99  07:28:039PM     <DIR>          licensed:
+  unparsable
+
+in: 04-27-99  07:28:9AM     <DIR>          licensed:
+  unparsable
+
+in: 04-27-99  07:28:9PM     <DIR>          licensed:
+  unparsable
+
+in: 04-27-99  07:28:39A     <DIR>          licensed:
+  unparsable
+
+in: 04-27-99  07:28:39P     <DIR>          licensed:
+  unparsable
+
+in: 04-27-99  007:28          <DIR>          licensed:
+  unparsable
+
+in: 04-27-99  07:028          <DIR>          licensed:
+  unparsable
+
+in: 04-27-99  07:2          <DIR>          licensed:
+  unparsable
+
+in: 04-27-99  07:2          <DIR>          licensed:
+  unparsable
+
+in: 04-27-99  07          <DIR>          licensed:
+  unparsable
+
+in: 04-27-99  07:28A        <DIR>          licensed:
+  unparsable
+
+in: 04-27-99  07:28P        <DIR>          licensed:
+  unparsable
+
+# EPLF
+in: +i8388621.29609,m824255902,/,	dev:
+  name: dev
+  namelen: 3
+  may be directory
+  size: unknown
+  mtimetype: 1
+  mtime: 824255902 Tue Feb 13 23:58:22 1996
+  idtype: 1
+  id: 8388621.29609
+  idlen: 13
+in: +i8388621.44468,m839956783,r,s10376,	RFCEPLF:
+  name: RFCEPLF
+  namelen: 7
+  may be file
+  sizetype: 1
+  size: 10376
+  mtimetype: 1
+  mtime: 839956783 Tue Aug 13 17:19:43 1996
+  idtype: 1
+  id: 8388621.44468
+  idlen: 13
+in: +i8388621.44468,m839956783,r,s10000000000,	RFCEPLF:
+  name: RFCEPLF
+  namelen: 7
+  may be file
+  sizetype: 1
+  size: 1000000000
+  mtimetype: 1
+  mtime: 839956783 Tue Aug 13 17:19:43 1996
+  idtype: 1
+  id: 8388621.44468
+  idlen: 13
+in: +i8388621.44468,m839956783,r,s10376,	RFC EPLF:
+  name: RFC EPLF
+  namelen: 8
+  may be file
+  sizetype: 1
+  size: 10376
+  mtimetype: 1
+  mtime: 839956783 Tue Aug 13 17:19:43 1996
+  idtype: 1
+  id: 8388621.44468
+  idlen: 13
+# bad EPLF 
+in: +i8388621.44468,m839956783,r,s10376,	:
+  unparsable
+
+in: +i8388621.44468,m839956783,r,s10376,:
+  unparsable
+
+in: +i8388621.44468,m839956783,r,s10376:
+  unparsable
+
+in: +i,m839956783,r,s10376,	RFCEPLF:
+  unparsable
+
+in: +i8388621.44468,m,r,s10376,	RFCEPLF:
+  unparsable
+
+in: +i8388621.44468,m839956783,r,s,	RFCEPLF:
+  unparsable
+
+# note: not tab, but space.
+in: +i8388621.44468,m839956783,r,s10376, RFCEPLF:
+  unparsable
+
+# VMS / MultiNet
+in: 00README.TXT;1      2 30-DEC-1996 17:44 [SYSTEM] (RWED,RWED,RE,RE):
+  name: 00README.TXT
+  namelen: 12
+  may be file
+  size: unknown
+  mtimetype: 2
+  mtime: 851967840 Mon Dec 30 17:44:00 1996
+  id: unknown
+in: CORE.DIR;1          1  8-SEP-1996 16:09 [SYSTEM] (RWE,RWE,RE,RE):
+  name: CORE
+  namelen: 4
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 842198940 Sun Sep  8 16:09:00 1996
+  id: unknown
+in: CII-MANUAL.TEX;1  213/216  29-JAN-1996 03:33:12  [ANONYMOU,ANONYMOUS]   (RWED,RWED,,):
+  name: CII-MANUAL.TEX
+  namelen: 14
+  may be file
+  size: unknown
+  mtimetype: 4
+  mtime: 822886392 Mon Jan 29 03:33:12 1996
+  id: unknown
+in: DSPD.MAN;1  9   1-APR-1991 12:55 [SG,ROSENBLUM] (RWED,RWED,RE,RE):
+  name: DSPD.MAN
+  namelen: 8
+  may be file
+  size: unknown
+  mtimetype: 2
+  mtime: 670510500 Mon Apr  1 12:55:00 1991
+  id: unknown
+in: [VMSSERV.FILES]ALARM.DIR;1      1/3          5-MAR-1993 18:09:
+  name: ALARM
+  namelen: 5
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 731354940 Fri Mar  5 18:09:00 1993
+  id: unknown
+# bad VMS / MultiNet
+in: 00README.TXT;      2 30-DEC-1996 17:44 [SYSTEM] (RWED,RWED,RE,RE):
+  name: 00README.TXT
+  namelen: 12
+  may be file
+  size: unknown
+  mtimetype: 2
+  mtime: 851967840 Mon Dec 30 17:44:00 1996
+  id: unknown
+in: 00README.TXT      2 30-DEC-1996 17:44 [SYSTEM] (RWED,RWED,RE,RE):
+  name: 00README.TXT
+  namelen: 12
+  may be file
+  size: unknown
+  mtimetype: 2
+  mtime: 851967840 Mon Dec 30 17:44:00 1996
+  id: unknown
+in: 00README.TXT;1      30-DEC-1996 17:44 [SYSTEM] (RWED,RWED,RE,RE):
+  unparsable
+
+in: .DIR;1      2 30-DEC-1996 17:44 [SYSTEM] (RWED,RWED,RE,RE):
+  name: .DIR
+  namelen: 4
+  may be file
+  size: unknown
+  mtimetype: 2
+  mtime: 851967840 Mon Dec 30 17:44:00 1996
+  id: unknown
+# unix
+in: -r--r--r--   1 uwe      ohse        27040 Jan 29 16:32 s.uogetopt.c:
+  name: s.uogetopt.c
+  namelen: 12
+  may be file
+  sizetype: 1
+  size: 27040
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: -r--r--r--   1 uwe      ohse         1382 Dec 18  1991 s.sig.c:
+  name: s.sig.c
+  namelen: 7
+  may be file
+  sizetype: 1
+  size: 1382
+  mtimetype: 3
+  mtime: 693014400 Wed Dec 18 00:00:00 1991
+  id: unknown
+in: lrwxr-xr-x   1 uwe      ohse           18 Dec 31  1999 SCCS -> XXXXX:
+  name: SCCS
+  namelen: 4
+  may be directory
+  may be file
+  sizetype: 1
+  size: 18
+  mtimetype: 3
+  mtime: 946598400 Fri Dec 31 00:00:00 1999
+  id: unknown
+in: lrwxrwxrwx   1 root     root           35 Jun 19 10:46 mmmm -> dddd:
+  name: mmmm
+  namelen: 4
+  may be directory
+  may be file
+  sizetype: 1
+  size: 35
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: -rw-r--r--   1 root     other        531 Jan 29 03:26 README:
+  name: README
+  namelen: 6
+  may be file
+  sizetype: 1
+  size: 531
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: dr-xr-xr-x   2 root     other        512 Apr  8  1994 etc:
+  name: etc
+  namelen: 3
+  may be directory
+  sizetype: 1
+  size: 512
+  mtimetype: 3
+  mtime: 765763200 Fri Apr  8 00:00:00 1994
+  id: unknown
+in: dr-xr-xr-x   2 root     512 Apr  8  1994 etc:
+  name: etc
+  namelen: 3
+  may be directory
+  sizetype: 1
+  size: 512
+  mtimetype: 3
+  mtime: 765763200 Fri Apr  8 00:00:00 1994
+  id: unknown
+in: lrwxrwxrwx   1 root     other          7 Jan 25 00:17 bin -> usr/bin:
+  name: bin
+  namelen: 3
+  may be directory
+  may be file
+  sizetype: 1
+  size: 7
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+# stranger cases
+in: -r--r--r--   1 uwe      ohse        27040 Jan 29 1996 file name:
+  name: file name
+  namelen: 9
+  may be file
+  sizetype: 1
+  size: 27040
+  mtimetype: 3
+  mtime: 822873600 Mon Jan 29 00:00:00 1996
+  id: unknown
+in: -r--r--r--   1 uwe      ohse        27040 Jan 29 1996 my file name:
+  name: my file name
+  namelen: 12
+  may be file
+  sizetype: 1
+  size: 27040
+  mtimetype: 3
+  mtime: 822873600 Mon Jan 29 00:00:00 1996
+  id: unknown
+in: -r--r--r--   1 uwe      ohse        27040 Jan 29 1996 17:01 file name:
+  name: file name
+  namelen: 9
+  may be file
+  sizetype: 1
+  size: 27040
+  mtimetype: 2
+  mtime: 822934860 Mon Jan 29 17:01:00 1996
+  id: unknown
+in: -r--r--r--   1 uwe      ohse        27040 Jan 29 1996 17:01:
+  name: 17:01
+  namelen: 5
+  may be file
+  sizetype: 1
+  size: 27040
+  mtimetype: 3
+  mtime: 822873600 Mon Jan 29 00:00:00 1996
+  id: unknown
+in: -rwxrwxrwx   1 uwe      ohse        27040 Jan 29 1996   spacy:
+  name:   spacy
+  namelen: 7
+  may be file
+  sizetype: 1
+  size: 27040
+  mtimetype: 3
+  mtime: 822873600 Mon Jan 29 00:00:00 1996
+  id: unknown
+in: drwxrwxrwx   1 uwe      ohse         1024 Jan 29 1996   spacydir:
+  name:   spacydir
+  namelen: 10
+  may be directory
+  sizetype: 1
+  size: 1024
+  mtimetype: 3
+  mtime: 822873600 Mon Jan 29 00:00:00 1996
+  id: unknown
+in: - 1 u o 3 Jan 29 1996 17:01 a b c d e f g h i j k l m n o p q r s t:
+  name: a b c d e f g h i j k l m n o p q r s t
+  namelen: 39
+  may be file
+  sizetype: 1
+  size: 3
+  mtimetype: 2
+  mtime: 822934860 Mon Jan 29 17:01:00 1996
+  id: unknown
+# bad unix
+in: -r--r--r--   1 uwe      ohse        27040 Jan 29 16:32:
+  unparsable
+
+in: -r--r--r--   1 uwe      ohse        27040 Jan 29 16:32s.uogetopt.c:
+  unparsable
+
+in: -r--r--r--   1 uwe      ohse        27040 Jan 29 16:3 s.uogetopt.c:
+  unparsable
+
+in: -r--r--r--   1 uwe      ohse        27040 Jan 29 16: s.uogetopt.c:
+  unparsable
+
+in: -r--r--r--   1 uwe      ohse        27040 Jan 29 16 s.uogetopt.c:
+  name: s.uogetopt.c
+  namelen: 12
+  may be file
+  sizetype: 1
+  size: 27040
+  mtimetype: 3
+  mtime: 1454025600 Fri Jan 29 00:00:00 2016
+  id: unknown
+in: -r--r--r--   1 uwe      ohse        27040 Jan 29 s.uogetopt.c:
+  unparsable
+
+in: -r--r--r--   1 uwe      ohse        27040 Jan 29 199 s.uogetopt.c:
+  unparsable
+
+in: -r--r--r--   1 uwe      ohse        27040 jan 29 16:32 s.uogetopt.c:
+  name: s.uogetopt.c
+  namelen: 12
+  may be file
+  sizetype: 1
+  size: 27040
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: -r--r--r--   1 uwe      ohse        27040 an 29 16:32 s.uogetopt.c:
+  unparsable
+
+in: -r--r--r--   1 uwe      ohse        Jan 29 16:32 s.uogetopt.c:
+  name: s.uogetopt.c
+  namelen: 12
+  may be file
+  size: unknown
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: -r--r--r--   1 uwe      27040 Jan 29 16:32 s.uogetopt.c:
+  name: s.uogetopt.c
+  namelen: 12
+  may be file
+  sizetype: 1
+  size: 27040
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: -r--r--r--   1 ohse        27040 Jan 29 16:32 s.uogetopt.c:
+  name: s.uogetopt.c
+  namelen: 12
+  may be file
+  sizetype: 1
+  size: 27040
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: -r--r--r--   uwe      ohse        27040 Jan 29 16:32 s.uogetopt.c:
+  name: s.uogetopt.c
+  namelen: 12
+  may be file
+  sizetype: 1
+  size: 27040
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: 1 uwe      ohse        27040 Jan 29 16:32 s.uogetopt.c:
+  unparsable
+
+in: l            1 uwe      ohse        27040 Jan 29 16:32 s.uogetopt.c:
+  name: s.uogetopt.c
+  namelen: 12
+  may be directory
+  may be file
+  sizetype: 1
+  size: 27040
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: l            1 uwe      ohse        27040 Jan 29 16:32 s.uogetopt.c -> ooo:
+  name: s.uogetopt.c
+  namelen: 12
+  may be directory
+  may be file
+  sizetype: 1
+  size: 27040
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: br--r--r--   1 uwe      ohse        27040 Jan 29 16:32 s.uogetopt.c -> ooo:
+  name: s.uogetopt.c -> ooo
+  namelen: 19
+  sizetype: 1
+  size: 27040
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: br--r--r--   1 uwe      ohse  12345627040 Jan 29 16:32 s.uogetopt.c:
+  name: s.uogetopt.c
+  namelen: 12
+  sizetype: 1
+  size: 12345627040
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: br--r--r--   1 uwe      ohse  10000000000 Jan 29 16:32 s.uogetopt.c:
+  name: s.uogetopt.c
+  namelen: 12
+  sizetype: 1
+  size: 1000000000
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: -r--r--r--   1 uwe      ohse        27040 Jan 29 96 16:32 s.uogetopt.c:
+  name: s.uogetopt.c
+  namelen: 12
+  may be file
+  sizetype: 1
+  size: 27040
+  mtimetype: 2
+  mtime: 822933120 Mon Jan 29 16:32:00 1996
+  id: unknown
+in: -r--r--r--   1 uwe      ohse        27040 Jan 29 1996 16:32 s.uogetopt.c:
+  name: s.uogetopt.c
+  namelen: 12
+  may be file
+  sizetype: 1
+  size: 27040
+  mtimetype: 2
+  mtime: 822933120 Mon Jan 29 16:32:00 1996
+  id: unknown
+# Microsoft's FTP server for Windows:
+in: ----------   1 owner    group         1803128 Jul 10 10:18 ls-lR.Z:
+  name: ls-lR.Z
+  namelen: 7
+  may be file
+  sizetype: 1
+  size: 1803128
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: d---------   1 owner    group               0 May  9 19:45 Softlib:
+  name: Softlib
+  namelen: 7
+  may be directory
+  sizetype: 1
+  size: 0
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+# WFTPD for Windows:
+in: -rwxrwxrwx   1 noone    nogroup      322 Aug 19  1996 message.ftp:
+  name: message.ftp
+  namelen: 11
+  may be file
+  sizetype: 1
+  size: 322
+  mtimetype: 3
+  mtime: 840412800 Mon Aug 19 00:00:00 1996
+  id: unknown
+# NetPresenz for the Mac:
+in: -------r--         326  1391972  1392298 Nov 22  1995 MegaPhone.sit:
+  name: MegaPhone.sit
+  namelen: 13
+  may be file
+  sizetype: 1
+  size: 1392298
+  mtimetype: 3
+  mtime: 816998400 Wed Nov 22 00:00:00 1995
+  id: unknown
+in: drwxrwxr-x               folder        2 May 10  1996 network:
+  name: network
+  namelen: 7
+  may be directory
+  sizetype: 1
+  size: 2
+  mtimetype: 3
+  mtime: 831686400 Fri May 10 00:00:00 1996
+  id: unknown
+# MSDOS
+in: 4-27-00  09:09PM       <DIR>          licensed:
+  name: licensed
+  namelen: 8
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 956869740 Thu Apr 27 21:09:00 2000
+  id: unknown
+in: 7-18-00  10:16AM       <DIR>          pub:
+  name: pub
+  namelen: 3
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 963915360 Tue Jul 18 10:16:00 2000
+  id: unknown
+in: 4-14-00  03:47PM                  589 readme.htm:
+  name: readme.htm
+  namelen: 10
+  may be file
+  sizetype: 1
+  size: 589
+  mtimetype: 2
+  mtime: 955727220 Fri Apr 14 15:47:00 2000
+  id: unknown
+in: 03-16-94  06:29AM       <DIR>          .:
+  name: .
+  namelen: 1
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 763799340 Wed Mar 16 06:29:00 1994
+  id: unknown
+in: 03-16-94  06:29AM       <DIR>          ..:
+  name: ..
+  namelen: 2
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 763799340 Wed Mar 16 06:29:00 1994
+  id: unknown
+in: 04-11-94  11:48PM       <DIR>          creative:
+  name: creative
+  namelen: 8
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 766108080 Mon Apr 11 23:48:00 1994
+  id: unknown
+in: 03-08-94  07:17AM                 5504 article.xfiles.intro:
+  name: article.xfiles.intro
+  namelen: 20
+  may be file
+  sizetype: 1
+  size: 5504
+  mtimetype: 2
+  mtime: 763111020 Tue Mar  8 07:17:00 1994
+  id: unknown
+in: 02-28-94  11:44AM                 3262 article1.gillian.anderson:
+  name: article1.gillian.anderson
+  namelen: 25
+  may be file
+  sizetype: 1
+  size: 3262
+  mtimetype: 2
+  mtime: 762435840 Mon Feb 28 11:44:00 1994
+  id: unknown
+in: 02-28-04  11:44AM                 3262 article1.gillian.anderson:
+  name: article1.gillian.anderson
+  namelen: 25
+  may be file
+  sizetype: 1
+  size: 3262
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: 02-28-94  11:44:55AM                 3262 article1.gillian.anderson:
+  name: article1.gillian.anderson
+  namelen: 25
+  may be file
+  sizetype: 1
+  size: 3262
+  mtimetype: 4
+  mtime: 762435895 Mon Feb 28 11:44:55 1994
+  id: unknown
+in: 02-28-94  11:44AM          10000000000 article1.gillian.anderson:
+  name: article1.gillian.anderson
+  namelen: 25
+  may be file
+  sizetype: 1
+  size: 1000000000
+  mtimetype: 2
+  mtime: 762435840 Mon Feb 28 11:44:00 1994
+  id: unknown
+in: 02-28-1994  11:44AM                 3262 article1.gillian.anderson:
+  name: article1.gillian.anderson
+  namelen: 25
+  may be file
+  sizetype: 1
+  size: 3262
+  mtimetype: 2
+  mtime: 762435840 Mon Feb 28 11:44:00 1994
+  id: unknown
+# MSDOS with leading spaces, aka NT.
+in: 03-16-94  06:29AM       <DIR>           dirnamewithleadingspace:
+  name:  dirnamewithleadingspace
+  namelen: 24
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 763799340 Wed Mar 16 06:29:00 1994
+  id: unknown
+in: 03-16-94  06:29AM                  123  filenamewithleadingspace:
+  name:  filenamewithleadingspace
+  namelen: 25
+  may be file
+  sizetype: 1
+  size: 123
+  mtimetype: 2
+  mtime: 763799340 Wed Mar 16 06:29:00 1994
+  id: unknown
+# bad MSDOS
+in: 2-28-94  11:44AM                 3262 article1.gillian.anderson:
+  name: article1.gillian.anderson
+  namelen: 25
+  may be file
+  sizetype: 1
+  size: 3262
+  mtimetype: 2
+  mtime: 762435840 Mon Feb 28 11:44:00 1994
+  id: unknown
+in: 02-8-94  11:44AM                 3262 article1.gillian.anderson:
+  name: article1.gillian.anderson
+  namelen: 25
+  may be file
+  sizetype: 1
+  size: 3262
+  mtimetype: 2
+  mtime: 760707840 Tue Feb  8 11:44:00 1994
+  id: unknown
+in: 02-28-4  11:44AM                 3262 article1.gillian.anderson:
+  unparsable
+
+in: 02-28-94  11:44AM                 article1.gillian.anderson:
+  unparsable
+
+in: 02-28-94  11:44AM                 3262 :
+  unparsable
+
+in: 02-28-94  11:44AM                 3262:
+  unparsable
+
+# NetWare. Quite like unix.
+in: d [R----F--] supervisor            512       Jan 16 18:53    login:
+  name: login
+  namelen: 5
+  may be directory
+  sizetype: 1
+  size: 512
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: - [R----F--] rhesus             214059       Oct 20 15:27    cx.exe:
+  name: cx.exe
+  namelen: 6
+  may be file
+  sizetype: 1
+  size: 214059
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: - [R----F--] jrd                197928       Sep 25 15:19    kermit.exe:
+  name: kermit.exe
+  namelen: 10
+  may be file
+  sizetype: 1
+  size: 197928
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: d [R----F--] jrd                   512       Oct 06 09:31    source:
+  name: source
+  namelen: 6
+  may be directory
+  sizetype: 1
+  size: 512
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: d [RWCEAFMS] jrd                   512       Sep 04 14:38    lwp:
+  name: lwp
+  namelen: 3
+  may be directory
+  sizetype: 1
+  size: 512
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: d [R----F-]  1 carl                   512 Mar 12 15:47 txt:
+  name: txt
+  namelen: 3
+  may be directory
+  sizetype: 1
+  size: 512
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+in: - [-RWCE-F-] mlm                   11820 Feb  3 93 12:00  drivers.doc:
+  name: drivers.doc
+  namelen: 11
+  may be file
+  sizetype: 1
+  size: 11820
+  mtimetype: 2
+  mtime: 728740800 Wed Feb  3 12:00:00 1993
+  id: unknown
+in: -[R----F-]  1 supervis      256 Nov 15 14:21 readme.txt:
+  name: readme.txt
+  namelen: 10
+  may be file
+  sizetype: 1
+  size: 256
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+# supertcp
+in: .               <DIR>           11-16-94        17:16:
+  name: .
+  namelen: 1
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 787598160 Fri Dec 16 17:16:00 1994
+  id: unknown
+in: ..              <DIR>           11-16-94        17:16:
+  name: ..
+  namelen: 2
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 787598160 Fri Dec 16 17:16:00 1994
+  id: unknown
+in: INSTALL         <DIR>           11-16-94        17:17:
+  name: INSTALL
+  namelen: 7
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 787598220 Fri Dec 16 17:17:00 1994
+  id: unknown
+in: CMT             <DIR>           11-21-94        10:17:
+  name: CMT
+  namelen: 3
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 788005020 Wed Dec 21 10:17:00 1994
+  id: unknown
+in: DESIGN1.DOC          11264      05-11-95        14:20:
+  name: DESIGN1.DOC
+  namelen: 11
+  may be file
+  sizetype: 1
+  size: 11264
+  mtimetype: 2
+  mtime: 802880400 Sun Jun 11 14:20:00 1995
+  id: unknown
+in: README.TXT            1045      05-10-95        11:01:
+  name: README.TXT
+  namelen: 10
+  may be file
+  sizetype: 1
+  size: 1045
+  mtimetype: 2
+  mtime: 802782060 Sat Jun 10 11:01:00 1995
+  id: unknown
+in: WPKIT1.EXE          960338      06-21-95        17:01:
+  name: WPKIT1.EXE
+  namelen: 10
+  may be file
+  sizetype: 1
+  size: 960338
+  mtimetype: 2
+  mtime: 806346060 Fri Jul 21 17:01:00 1995
+  id: unknown
+in: CMT.CSV                  0      07-06-95        14:56:
+  name: CMT.CSV
+  namelen: 7
+  may be file
+  sizetype: 1
+  size: 0
+  mtimetype: 2
+  mtime: 807720960 Sun Aug  6 14:56:00 1995
+  id: unknown
+# bad supertcp
+in: WPKIT1.EXE                      06-21-95        17:01:
+  unparsable
+
+in: WPKIT1.EXE     10000000000      06-21-95        17:01:
+  name: WPKIT1.EXE
+  namelen: 10
+  may be file
+  sizetype: 1
+  size: 1000000000
+  mtimetype: 2
+  mtime: 806346060 Fri Jul 21 17:01:00 1995
+  id: unknown
+in: WPKIT1.EXE          960338       6-21-95        17:01:
+  unparsable
+
+# OS/2
+in:                 0           DIR   04-11-95   16:26  .:
+  name: .
+  namelen: 1
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 797617560 Tue Apr 11 16:26:00 1995
+  id: unknown
+in:                 0           DIR   04-11-95   16:26  ..:
+  name: ..
+  namelen: 2
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 797617560 Tue Apr 11 16:26:00 1995
+  id: unknown
+in:                 0           DIR   04-11-95   16:26  ADDRESS:
+  name: ADDRESS
+  namelen: 7
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 797617560 Tue Apr 11 16:26:00 1995
+  id: unknown
+in:               612      A          07-28-95   16:45  air_tra1.bag:
+  name: air_tra1.bag
+  namelen: 12
+  may be file
+  sizetype: 1
+  size: 612
+  mtimetype: 2
+  mtime: 806949900 Fri Jul 28 16:45:00 1995
+  id: unknown
+in:               195      A          08-09-95   10:23  Alfa1.bag:
+  name: Alfa1.bag
+  namelen: 9
+  may be file
+  sizetype: 1
+  size: 195
+  mtimetype: 2
+  mtime: 807963780 Wed Aug  9 10:23:00 1995
+  id: unknown
+in:                 0           DIR   04-11-95   16:26  ATTACH:
+  name: ATTACH
+  namelen: 6
+  may be directory
+  size: unknown
+  mtimetype: 2
+  mtime: 797617560 Tue Apr 11 16:26:00 1995
+  id: unknown
+in:               372      A          08-09-95   10:26  Aussie_1.bag:
+  name: Aussie_1.bag
+  namelen: 12
+  may be file
+  sizetype: 1
+  size: 372
+  mtimetype: 2
+  mtime: 807963960 Wed Aug  9 10:26:00 1995
+  id: unknown
+in:            310992                 06-28-94   09:56  INSTALL.EXE:
+  name: INSTALL.EXE
+  namelen: 11
+  may be file
+  sizetype: 1
+  size: 310992
+  mtimetype: 2
+  mtime: 772797360 Tue Jun 28 09:56:00 1994
+  id: unknown
+# ------------------------------ VM/CMS
+in: DIRACC   EXEC     A1    F    132         84          3  01/25/93  14:49:47:
+  unparsable
+
+in: DIRUNIX  SCRIPT   A1    V     77       1216         17  01/04/93  20:30:47:
+  unparsable
+
+in: MAIL     PROFILE  A2    F     80          1          1  10/14/92  16:12:27:
+  unparsable
+
+# MLSD
+in: MLSD:size=4161;lang=en-US;modify=19970214165800;create=19961001124534;type=file;x.myfact=foo,bar; filename:
+  name: filename
+  namelen: 8
+  may be file
+  sizetype: 1
+  size: 4161
+  mtimetype: 1
+  mtime: 855939480 Fri Feb 14 16:58:00 1997
+  id: unknown
+in: MLST: Type=file;Size=1024990;Perm=r; /tmp/cap60.pl198.tar.gz:
+  name: /tmp/cap60.pl198.tar.gz
+  namelen: 23
+  may be file
+  sizetype: 1
+  size: 1024990
+  mtime: unknown
+  id: unknown
+in: MLST: Type=dir;Modify=19981107085215;Perm=el; /tmp:
+  name: /tmp
+  namelen: 4
+  may be directory
+  size: unknown
+  mtimetype: 1
+  mtime: 910428735 Sat Nov  7 08:52:15 1998
+  id: unknown
+in: MLSD:Type=cdir;Modify=19981107085215;Perm=el; tmp:
+  name: tmp
+  namelen: 3
+  may be directory
+  size: unknown
+  mtimetype: 1
+  mtime: 910428735 Sat Nov  7 08:52:15 1998
+  id: unknown
+in: MLSD:Type=cdir;Modify=19981107085215;Perm=el; /tmp:
+  name: /tmp
+  namelen: 4
+  may be directory
+  size: unknown
+  mtimetype: 1
+  mtime: 910428735 Sat Nov  7 08:52:15 1998
+  id: unknown
+in: MLSD:Type=pdir;Modify=19990112030508;Perm=el; ..:
+  name: ..
+  namelen: 2
+  may be directory
+  size: unknown
+  mtimetype: 1
+  mtime: 916110308 Tue Jan 12 03:05:08 1999
+  id: unknown
+in: MLSD:Type=file;Size=25730;Modify=19940728095854;Perm=; capmux.tar.z:
+  name: capmux.tar.z
+  namelen: 12
+  may be file
+  sizetype: 1
+  size: 25730
+  mtimetype: 1
+  mtime: 775389534 Thu Jul 28 09:58:54 1994
+  id: unknown
+in: MLSD:Type=file;Size=1830;Modify=19940916055648;Perm=r; hatch.c:
+  name: hatch.c
+  namelen: 7
+  may be file
+  sizetype: 1
+  size: 1830
+  mtimetype: 1
+  mtime: 779695008 Fri Sep 16 05:56:48 1994
+  id: unknown
+in: MLSD:Type=file;Size=25624;Modify=19951003165342;Perm=r; MacIP-02.txt:
+  name: MacIP-02.txt
+  namelen: 12
+  may be file
+  sizetype: 1
+  size: 25624
+  mtimetype: 1
+  mtime: 812739222 Tue Oct  3 16:53:42 1995
+  id: unknown
+in: MLSD:Type=file;Size=2154;Modify=19950501105033;Perm=r; uar.netbsd.patch:
+  name: uar.netbsd.patch
+  namelen: 16
+  may be file
+  sizetype: 1
+  size: 2154
+  mtimetype: 1
+  mtime: 799325433 Mon May  1 10:50:33 1995
+  id: unknown
+in: MLSD:Type=file;Size=54757;Modify=19951105101754;Perm=r; iptnnladev.1.0.sit.hqx:
+  name: iptnnladev.1.0.sit.hqx
+  namelen: 22
+  may be file
+  sizetype: 1
+  size: 54757
+  mtimetype: 1
+  mtime: 815566674 Sun Nov  5 10:17:54 1995
+  id: unknown
+in: MLSD:Type=file;Size=226546;Modify=19970515023901;Perm=r; melbcs.tif:
+  name: melbcs.tif
+  namelen: 10
+  may be file
+  sizetype: 1
+  size: 226546
+  mtimetype: 1
+  mtime: 863663941 Thu May 15 02:39:01 1997
+  id: unknown
+in: MLSD:Type=file;Size=12927;Modify=19961025135602;Perm=r; tardis.1.6.sit.hqx:
+  name: tardis.1.6.sit.hqx
+  namelen: 18
+  may be file
+  sizetype: 1
+  size: 12927
+  mtimetype: 1
+  mtime: 846251762 Fri Oct 25 13:56:02 1996
+  id: unknown
+in: MLST: Type=dir;Perm=el;Unique=keVO1+ZF4 test:
+  name: test
+  namelen: 4
+  may be directory
+  size: unknown
+  mtime: unknown
+  idtype: 1
+  id: keVO1+ZF4
+  idlen: 9
+  has unterminated MLSX fact list
+in: MLSD:Type=cdir;Perm=el;Unique=keVO1+ZF4; test:
+  name: test
+  namelen: 4
+  may be directory
+  size: unknown
+  mtime: unknown
+  idtype: 1
+  id: keVO1+ZF4
+  idlen: 9
+in: MLSD:Type=pdir;Perm=e;Unique=keVO1+d?3; ..:
+  name: ..
+  namelen: 2
+  may be directory
+  size: unknown
+  mtime: unknown
+  idtype: 1
+  id: keVO1+d?3
+  idlen: 9
+in: MLSD:Type=OS.unix=slink:/foobar;Perm=;Unique=keVO1+4G4; foobar:
+  name: foobar
+  namelen: 6
+  may be directory
+  may be file
+  size: unknown
+  mtime: unknown
+  idtype: 1
+  id: keVO1+4G4
+  idlen: 9
+in: MLSD:Type=OS.unix=chr-13/29;Perm=;Unique=keVO1+5G4; device:
+  name: device
+  namelen: 6
+  may be directory
+  may be file
+  size: unknown
+  mtime: unknown
+  idtype: 1
+  id: keVO1+5G4
+  idlen: 9
+in: MLSD:Type=OS.unix=blk-11/108;Perm=;Unique=keVO1+6G4; block:
+  name: block
+  namelen: 5
+  may be directory
+  may be file
+  size: unknown
+  mtime: unknown
+  idtype: 1
+  id: keVO1+6G4
+  idlen: 9
+in: MLSD:Type=file;Perm=awr;Unique=keVO1+8G4; writable:
+  name: writable
+  namelen: 8
+  may be file
+  size: unknown
+  mtime: unknown
+  idtype: 1
+  id: keVO1+8G4
+  idlen: 9
+in: MLSD:Type=dir;Perm=cpmel;Unique=keVO1+7G4; promiscuous:
+  name: promiscuous
+  namelen: 11
+  may be directory
+  size: unknown
+  mtime: unknown
+  idtype: 1
+  id: keVO1+7G4
+  idlen: 9
+in: MLSD:Type=dir;Perm=;Unique=keVO1+1t2; no-exec:
+  name: no-exec
+  namelen: 7
+  may be directory
+  size: unknown
+  mtime: unknown
+  idtype: 1
+  id: keVO1+1t2
+  idlen: 9
+in: MLSD:Type=file;Perm=r;Unique=keVO1+EG4; two words:
+  name: two words
+  namelen: 9
+  may be file
+  size: unknown
+  mtime: unknown
+  idtype: 1
+  id: keVO1+EG4
+  idlen: 9
+in: MLSD:Type=file;Perm=r;Unique=keVO1+IH4;  leading space:
+  name:  leading space
+  namelen: 14
+  may be file
+  size: unknown
+  mtime: unknown
+  idtype: 1
+  id: keVO1+IH4
+  idlen: 9
+in: MLSD:Type=file;Perm=r;Unique=keVO1+1G4; file1:
+  name: file1
+  namelen: 5
+  may be file
+  size: unknown
+  mtime: unknown
+  idtype: 1
+  id: keVO1+1G4
+  idlen: 9
+in: MLSD:Type=dir;Perm=cpmel;Unique=keVO1+7G4; incoming:
+  name: incoming
+  namelen: 8
+  may be directory
+  size: unknown
+  mtime: unknown
+  idtype: 1
+  id: keVO1+7G4
+  idlen: 9
+in: MLSD:Type=file;Perm=r;Unique=keVO1+1G4; file2:
+  name: file2
+  namelen: 5
+  may be file
+  size: unknown
+  mtime: unknown
+  idtype: 1
+  id: keVO1+1G4
+  idlen: 9
+in: MLSD:Type=file;Perm=r;Unique=keVO1+1G4; file3:
+  name: file3
+  namelen: 5
+  may be file
+  size: unknown
+  mtime: unknown
+  idtype: 1
+  id: keVO1+1G4
+  idlen: 9
+in: MLSD:Type=file;Perm=r;Unique=keVO1+1G4; file4:
+  name: file4
+  namelen: 5
+  may be file
+  size: unknown
+  mtime: unknown
+  idtype: 1
+  id: keVO1+1G4
+  idlen: 9
+# checking the "usual" MLSX brokeness, too.
+in: MLSD:size=4161;lang=en-US;modify=19970214165800;create=19961001124534;type=file;x.myfact=foo,bar filename:
+  name: filename
+  namelen: 8
+  may be file
+  sizetype: 1
+  size: 4161
+  mtimetype: 1
+  mtime: 855939480 Fri Feb 14 16:58:00 1997
+  id: unknown
+  has unterminated MLSX fact list
+--- ftpparse handling of file names starting with spaces
+# AIX 5.1 server - note the space at a different place
+in: -rw-r--r--   1 818      epsystem          4 Jan 01 2000  junk-old:
+  name:  junk-old
+  namelen: 9
+  may be file
+  sizetype: 1
+  size: 4
+  mtimetype: 3
+  mtime: 946684800 Sat Jan  1 00:00:00 2000
+  id: unknown
+in: -rw-r--r--   1 818      epsystem          5 Sep 26 08:10 junk-new:
+  name: junk-new
+  namelen: 8
+  may be file
+  sizetype: 1
+  size: 5
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+# this isn't AIX, but ...
+in: -rw-r--r--   1 818      epsystem          4 Jan 01  2000  junk-old2:
+  name:  junk-old2
+  namelen: 10
+  may be file
+  sizetype: 1
+  size: 4
+  mtimetype: 3
+  mtime: 946684800 Sat Jan  1 00:00:00 2000
+  id: unknown
+--- ftpparse eating spaces when ordered
+# AIX 5.1 server - note the space at a different place
+in: -rw-r--r--   1 818      epsystem          4 Jan 01 2000  junk-old:
+  name: junk-old
+  namelen: 8
+  may be file
+  sizetype: 1
+  size: 4
+  mtimetype: 3
+  mtime: 946684800 Sat Jan  1 00:00:00 2000
+  id: unknown
+in: -rw-r--r--   1 818      epsystem          5 Sep 26 08:10 junk-new:
+  name: junk-new
+  namelen: 8
+  may be file
+  sizetype: 1
+  size: 5
+  mtimetype: 2
+  mtime: LAST 12 MONTHS
+  id: unknown
+# this isn't AIX, but ...
+in: -rw-r--r--   1 818      epsystem          4 Jan 01  2000  junk-old2:
+  name: junk-old2
+  namelen: 9
+  may be file
+  sizetype: 1
+  size: 4
+  mtimetype: 3
+  mtime: 946684800 Sat Jan  1 00:00:00 2000
+  id: unknown
+--- ftpcopy prints usage message without enough arguments
+ftpcopy: usage: ftpcopy [options] host[:port] remotedir [localdir]
+   or: ftpcopy [options] ftp://host[:port]/remotedir [localdir]
+  use the --help option to get a description of the options.
+2
+ftpcopy: usage: ftpcopy [options] host[:port] remotedir [localdir]
+   or: ftpcopy [options] ftp://host[:port]/remotedir [localdir]
+  use the --help option to get a description of the options.
+2
+--- ftpcopy refuses default localdir . without -n option
+ftpcopy: fatal: default `localdir' (.) not allowed without the -n option
+100
+ftpcopy: fatal: default `localdir' (.) not allowed without the -n option
+100
+--- ftpcopy prints usage message with too many arguments
+ftpcopy: usage: ftpcopy [options] host[:port] remotedir [localdir]
+   or: ftpcopy [options] ftp://host[:port]/remotedir [localdir]
+  use the --help option to get a description of the options.
+2
+ftpcopy: usage: ftpcopy [options] host[:port] remotedir [localdir]
+   or: ftpcopy [options] ftp://host[:port]/remotedir [localdir]
+  use the --help option to get a description of the options.
+2
+ftpcopy: usage: ftpcopy [options] host[:port] remotedir [localdir]
+   or: ftpcopy [options] ftp://host[:port]/remotedir [localdir]
+  use the --help option to get a description of the options.
+2
+ftpcopy: usage: ftpcopy [options] host[:port] remotedir [localdir]
+   or: ftpcopy [options] ftp://host[:port]/remotedir [localdir]
+  use the --help option to get a description of the options.
+2
+--- ftpcopy refuses unknown url schemes
+ftpcopy: fatal: URL type `ftpcopy' is not supported
+100
+ftpcopy: fatal: URL type `http' is not supported
+100
+ftpcopy: fatal: URL type `Ftp' is not supported
+100
+--- ftpcopy prints error message with unknown port name
+ftpcopy: fatal: cannot parse 127.255.255.255:nonexistantport
+100
+ftpcopy: fatal: cannot parse 127.255.255.255:nonexistantport
+100
+--- ftpcopy prints error message with unknown host name
+ftpcopy: fatal: no IP address for nonexistinghost:ftp
+100
+ftpcopy: fatal: no IP address for nonexistinghost:ftp
+100
+--- ftpcopy prints error message with unresolvable host name
+ftpcopy: fatal: temporarily unable to figure out IP address for thislabelistoolongbecausednshasalimitof63charactersinasinglelabel.:ftp: protocol error
+111
+ftpcopy: fatal: temporarily unable to figure out IP address for thislabelistoolongbecausednshasalimitof63charactersinasinglelabel.:ftp: protocol error
+111
+--- set up ftp service
+--- publicfile listing format check
+--- empty start directory test
+0
+--- nonexistant start entity
+ftpcopy: fatal: failed to LIST the remote directory: 550 Sorry, I can't open that file: file does not exist.
+100
+--- start entity is a file
+%./file: download successful
+0
+0
+0
+%file: download successful
+0
+0
+0
+%client/file: download successful
+0
+0
+%client/file: download successful
+0
+0
+%client/file: download successful
+0
+--- start entity is a file, ftpcopy creates parent directory
+%createit/file: download successful
+0
+%createit/file: download successful
+0
+--- start entity is a file, ftpcopy handles different local name
+%createit: download successful
+0
+--- start entity is a directory with one file
+%client/file: download successful
+0
+%client/subdir/file: download successful
+0
+--- start entity is a directory with two files
+%client/one: download successful
+%client/two: download successful
+0
+%client/subdir/one: download successful
+%client/subdir/two: download successful
+0
+--- start entity contains one directory with two files
+%client/dir/one: download successful
+%client/dir/two: download successful
+0
+%client/subdir/dir/one: download successful
+%client/subdir/dir/two: download successful
+0
+--- ftpcopy deletes superfluous files
+%client/dir/one: download successful
+%client/dir/two: download successful
+%client/dir/three: not found on remote, deleted
+0
+--- ftpcopy deletes superfluous directories
+%client/dir/dir4: not found on remote, deleted
+%client/dir/one: download successful
+%client/dir/two: download successful
+%client/dir2: not found on remote, deleted
+-
+client
+client/dir
+client/dir/one
+client/dir/two
+--- ftpcopy survives if a file is turned into a directory
+%client/dir/one/three: download successful
+0
+client
+client/dir
+client/dir/one
+client/dir/one/three
+client/dir/two
+--- ftpcopy survives if a directory is turned into a file
+%client/dir/one: download successful
+0
+client
+client/dir
+client/dir/one
+client/dir/two
+--- ftpcopy survives local symlink loops
+%client/dir/one: download successful
+0
+first symlink loop test
+client
+client/dir
+client/dir/one
+client/dir/two
+%client/dir/one/file: download successful
+0
+second symlink loop test
+client
+client/dir
+client/dir/one
+client/dir/one/file
+client/dir/two
+--- ftpcopy recognizes changed symbolic links to directories
+%client/dir1/one: download successful
+0
+client
+client/dir1
+client/dir1/one
+client/dir2
+%client/dir2/two: download successful
+0
+client
+client/dir1
+client/dir1/one
+client/dir2
+client/dir2/two
+--- ftpcopy handles dir -> symbolic link change
+0
+client
+client/dir1
+client/dir1/one
+client/dir2
+--- ftpcopy deals with rename situation 1
+%client/dir1/one: download successful
+0
+client
+client/dir1
+client/dir1/one
+0
+client
+client/dir1
+client/dir1/one
+client/dir2
+0
+client
+client/dir1
+client/dir1/one
+client/dir2
+%client/dir1/one: not found on remote, deleted
+%client/dir1: not found on remote, deleted
+%client/dir2/one: download successful
+-
+client
+client/dir2
+client/dir2/one
+--- ftpcopy deals with symlink to upper level directories
+%client/dir1/dir2/one: download successful
+0
+client
+client/dir1
+client/dir1/1
+client/dir1/2
+client/dir1/dir2
+client/dir1/dir2/dir1
+client/dir1/dir2/dir2
+client/dir1/dir2/one
+--- ftpcopy deals with symlink to current directories
+%client/dir1/dir2/one: download successful
+0
+client
+client/dir1
+client/dir1/1
+client/dir1/dir1
+client/dir1/dir2
+client/dir1/dir2/2
+client/dir1/dir2/dir2
+client/dir1/dir2/one
+--- ftpcopy deals with symlink to top level directory
+%client/dir1/dir2/one: download successful
+%client/dir1/dir2/two: download successful
+0
+client
+client/1
+client/2
+client/dir1
+client/dir1/dir1
+client/dir1/dir2
+client/dir1/dir2/dir2
+client/dir1/dir2/one
+client/dir1/dir2/two
+client/dir1/one
+client/one
+really a (sym)link
+--- ftpcopy deals with symlink to lower level directory
+%client/dir1/one: download successful
+%client/dir2/dir3/three: download successful
+%client/dir2/file1: download successful
+%client/dir2/file3: download successful
+0
+client
+client/dir1
+client/dir1/1
+client/dir1/one
+client/dir2
+client/dir2/dir1
+client/dir2/dir3
+client/dir2/dir3/3
+client/dir2/dir3/three
+client/dir2/file1
+client/dir2/file3
+client/dir3
+client/file1
+client/file3
+really a (sym)link 1
+really a (sym)link 2
+really a (sym)link 3
+--- ftpcopy deals with /../ in local file names
+%client/../client//dir1/two: download successful
+%client/../client//one (sym)linked to %client/dir1/two
+0
+client
+client/dir1
+client/dir1/two
+client/one
+changed
+--- ftpcopy --max-days works
+%client/1: too old
+%client/2: download successful
+%client/3: too old
+%client/dir/4: too old
+%client/dir/5: download successful
+%client/dir/6: too old
+0
+client
+client/2
+client/dir
+client/dir/5
+--- ftpcopy handles excludes and includes
+- e&i: download /0
+%client/0: download successful
+0
+- e&i: no download due to not included upper level directory
+0
+- e&i: download /d1/1 (include /d1 and /d1/1)
+%client/d1/1: download successful
+0
+- e&i: download /d1/1 (include /d1 and /d1/?)
+%client/d1/1: download successful
+0
+- e&i: download all (include /d1*)
+%client/d1/1: download successful
+%client/d1/d2/2: download successful
+%client/d1/d2/d3/3: download successful
+0
+- e&i: just get the directories (include *d?)
+0
+client
+client/d1
+client/d1/d2
+client/d1/d2/d3
+- e&i: just get the directories (include /d1, /d1/d2, /d1/d2/d3)
+0
+client
+client/d1
+client/d1/d2
+client/d1/d2/d3
+- e&i: get all but */2*
+%client/0: download successful
+%client/d1/1: download successful
+%client/d1/d2/d3/3: download successful
+0
+client
+client/0
+client/d1
+client/d1/1
+client/d1/d2
+client/d1/d2/d3
+client/d1/d2/d3/3
+- e&i: --in-exclude-file check (bad syntax)
+ftpcopy: fatal: ./inex-file: unknown tag at start of line ?/0
+111
+- e&i: --in-exclude-file check
+%client/0: download successful
+0
+--- ftpcopy handles subdirectory mirroring
+- subdir1:
+%client/dir2/dir21/file211: download successful
+0
+client
+client/dir2
+client/dir2/dir21
+client/dir2/dir21/file211
+client/dir2/file21
+client/file21
+changed
+- subdir2:
+%client/dir2/dir21/file211: not found on remote, deleted
+%client/dir2/dir21: not found on remote, deleted
+%client/dir2/file21: not found on remote, deleted
+%client/dir21/file211: download successful
+%client/dir2: not found on remote, deleted
+-
+client
+client/dir21
+client/dir21/file211
+client/file21
+- subdir3:
+%client/dir21/file211: not found on remote, deleted
+%client/dir21: not found on remote, deleted
+%client/dir31/file31: download successful
+%client/file21: not found on remote, deleted
+%client/file31: download successful
+-
+client
+client/dir3
+client/dir31
+client/dir31/file31
+client/file31
+client/newfile
+--- ftpcopy --directories-only works
+%client/dir31/file31: not found on remote, deleted
+%client/dir31: not found on remote, deleted
+%client/file31: not found on remote, deleted
+%client/newfile: not found on remote, deleted
+-
+client
+client/dir1
+client/dir1/dir2
+client/dir1/dir2/dir21
+client/dir11
+client/dir2
+client/dir3
+client/dir3/dir3
+client/dir3/dir31
+0
+client
+client/dir1
+client/dir1/dir2
+client/dir1/dir2/dir21
+client/dir11
+client/dir2
+client/dir3
+client/dir3/dir3
+client/dir3/dir31
+--- ftpcopy handles absolute local directories
+%client/0: download successful
+%client/d1/1: download successful
+%client/d1/d2/2: download successful
+0
+client
+client/0
+client/d1
+client/d1/1
+client/d1/d2
+client/d1/d2/0
+client/d1/d2/1
+client/d1/d2/2
+client/d1/d2/d0
+client/d1/d2/d1
+client/d1/d2/d2
+client/d1/d2/t2
+client/d1/t1
+client/t0
+changed0
+changed1
+--- ftpcopy recognizes --user and --pass
+220 Features: a p .
+230 Hi. No need to log in; I'm an anonymous ftp server.
+0
+220 Features: a p .
+230 Hi. No need to log in; I'm an anonymous ftp server.
+0
+--- ftpcopy recognizes username in urls
+220 Features: a p .
+230 Hi. No need to log in; I'm an anonymous ftp server.
+0
+--- ftpcopy --dry-run works
+%client/dir1/dir2/file2: dry-run non-download successful
+%client/dir1/dir2/linkf0: dry-run non-download successful
+%client/dir1/dir2/linkf1: dry-run non-download successful
+%client/directory_to_delete/file2delete: not found on remote, would be deleted
+%client/directory_to_delete: not found on remote, would be deleted
+%client/directory_to_keep/file2delete: not found on remote, would be deleted
+%client/directory_to_keep/file_to_get: dry-run non-download successful
+%client/directory_to_keep/file_to_keep: dry-run non-download successful
+%client/do_delete: not found on remote, would be deleted
+-
+client
+client/directory_to_delete
+client/directory_to_delete/file2delete
+client/directory_to_keep
+client/directory_to_keep/file2delete
+client/directory_to_keep/file_to_keep
+client/do_delete
+--- ftpcopy --interactive works
+%client/dir1/dir2/dir21/file211: download successful
+END-OF-COPY
+%client/dir1a/dir2/dir21/file211: download successful
+END-OF-COPY
+%client/dir2/dir21/file211: download successful
+END-OF-COPY
+%client/dir3/dir31/file31: download successful
+%client/dir3/file31: download successful
+END-OF-COPY
+0
+client
+client/dir1
+client/dir1/dir2
+client/dir1/dir2/dir21
+client/dir1/dir2/dir21/file211
+client/dir1/dir2/file21
+client/dir1/file21
+client/dir1a
+client/dir1a/dir2
+client/dir1a/dir2/dir21
+client/dir1a/dir2/dir21/file211
+client/dir1a/dir2/file21
+client/dir1a/file21
+client/dir2
+client/dir2/dir21
+client/dir2/dir21/file211
+client/dir2/file21
+client/dir3
+client/dir3/dir3
+client/dir3/dir31
+client/dir3/dir31/file31
+client/dir3/file31
+%client/dir1a/dir2/dir21/file211: not found on remote, deleted
+%client/dir1a/dir2/dir21: not found on remote, deleted
+%client/dir1a/dir2/file21: not found on remote, deleted
+%client/dir1a/dir2: not found on remote, deleted
+%client/dir1a/file21: not found on remote, deleted
+%client/dir1a: not found on remote, deleted
+-
+client
+client/dir1
+client/dir1/dir2
+client/dir1/dir2/dir21
+client/dir1/dir2/dir21/file211
+client/dir1/dir2/file21
+client/dir1/file21
+client/dir11
+client/dir2
+client/dir3
+client/dir3/dir3
+client/dir3/dir31
+client/dir3/dir31/file31
+client/dir3/file31
+--- ftpcopy --tolower works
+%client/link: download successful
+%client/dir1/dir2/file2 (sym)linked to %client/link
+%client/dir1/file1: download successful
+%client/file0: download successful
+0
+client
+client/dir1
+client/dir1/dir2
+client/dir1/dir2/file2
+client/dir1/file1
+client/file0
+client/link
+--- ftpcopy --tolower does not needlessly reget files
+%client/link: identical file found
+%client/dir1/dir2/file2: is a link
+%client/dir1/file1: identical file found
+%client/file0: identical file found
+0
+--- ftpcopy --tolower deals with collisions
+1
+3
+3
+--- ftpcopy --tolower works with exclude, too
+%client/link: download successful
+/dir1/dir2: excluded, matched `*dir2*'
+%client/dir1/file1: download successful
+%client/file0: download successful
+0
+client
+client/dir1
+client/dir1/file1
+client/file0
+client/link
+--- ftpcopy --ignore-size works
+%client/FILE1: download successful
+--- ftpcopy without --ignore-size works
+%client/FILE1: download successful
+--- ftpcopy --ignore-time works
+%client/FILE1: download successful
+--- ftpcopy --ignore-size --ignore-time works
+--- ftpcopy without --ignore-time works
+%client/FILE1: download successful
+--- ftpcopy has no file descriptor leak in remove_dir
+%client/d00: download successful
+%client/d01: download successful
+%client/d02: download successful
+%client/d03: download successful
+%client/d04: download successful
+%client/d05: download successful
+%client/d06: download successful
+%client/d07: download successful
+%client/d08: download successful
+%client/d09: download successful
+%client/d10: download successful
+%client/d11: download successful
+%client/d12: download successful
+%client/d13: download successful
+%client/d14: download successful
+%client/d15: download successful
+%client/d16: download successful
+%client/d17: download successful
+%client/d18: download successful
+%client/d19: download successful
+%client/d20: download successful
+%client/d21: download successful
+%client/d22: download successful
+%client/d23: download successful
+%client/d24: download successful
+%client/d25: download successful
+%client/d26: download successful
+%client/d27: download successful
+%client/d28: download successful
+%client/d29: download successful
+%client/d30: download successful
+%client/d31: download successful
+%client/d32: download successful
+%client/d33: download successful
+%client/d34: download successful
+%client/d35: download successful
+%client/d36: download successful
+%client/d37: download successful
+%client/d38: download successful
+%client/d39: download successful
+--- ftpcopy has no file descriptor leak in loop
+%client/d00/f00: download successful
+%client/d01/f01: download successful
+%client/d02/f02: download successful
+%client/d03/f03: download successful
+%client/d04/f04: download successful
+%client/d05/f05: download successful
+%client/d06/f06: download successful
+%client/d07/f07: download successful
+%client/d08/f08: download successful
+%client/d09/f09: download successful
+%client/d10/f10: download successful
+%client/d11/f11: download successful
+%client/d12/f12: download successful
+%client/d13/f13: download successful
+%client/d14/f14: download successful
+%client/d15/f15: download successful
+%client/d16/f16: download successful
+%client/d17/f17: download successful
+%client/d18/f18: download successful
+%client/d19/f19: download successful
+%client/d20/f20: download successful
+%client/d21/f21: download successful
+%client/d22/f22: download successful
+%client/d23/f23: download successful
+%client/d24/f24: download successful
+%client/d25/f25: download successful
+%client/d26/f26: download successful
+%client/d27/f27: download successful
+%client/d28/f28: download successful
+%client/d29/f29: download successful
+%client/d30/f30: download successful
+%client/d31/f31: download successful
+%client/d32/f32: download successful
+%client/d33/f33: download successful
+%client/d34/f34: download successful
+%client/d35/f35: download successful
+%client/d36/f36: download successful
+%client/d37/f37: download successful
+%client/d38/f38: download successful
+%client/d39/f39: download successful
+--- ftpcopy has no file descriptor leak in delete
+%client/d00/f00: not found on remote, deleted
+%client/d00: not found on remote, deleted
+%client/d01/f01: not found on remote, deleted
+%client/d01: not found on remote, deleted
+%client/d02/f02: not found on remote, deleted
+%client/d02: not found on remote, deleted
+%client/d03/f03: not found on remote, deleted
+%client/d03: not found on remote, deleted
+%client/d04/f04: not found on remote, deleted
+%client/d04: not found on remote, deleted
+%client/d05/f05: not found on remote, deleted
+%client/d05: not found on remote, deleted
+%client/d06/f06: not found on remote, deleted
+%client/d06: not found on remote, deleted
+%client/d07/f07: not found on remote, deleted
+%client/d07: not found on remote, deleted
+%client/d08/f08: not found on remote, deleted
+%client/d08: not found on remote, deleted
+%client/d09/f09: not found on remote, deleted
+%client/d09: not found on remote, deleted
+%client/d10/f10: not found on remote, deleted
+%client/d10: not found on remote, deleted
+%client/d11/f11: not found on remote, deleted
+%client/d11: not found on remote, deleted
+%client/d12/f12: not found on remote, deleted
+%client/d12: not found on remote, deleted
+%client/d13/f13: not found on remote, deleted
+%client/d13: not found on remote, deleted
+%client/d14/f14: not found on remote, deleted
+%client/d14: not found on remote, deleted
+%client/d15/f15: not found on remote, deleted
+%client/d15: not found on remote, deleted
+%client/d16/f16: not found on remote, deleted
+%client/d16: not found on remote, deleted
+%client/d17/f17: not found on remote, deleted
+%client/d17: not found on remote, deleted
+%client/d18/f18: not found on remote, deleted
+%client/d18: not found on remote, deleted
+%client/d19/f19: not found on remote, deleted
+%client/d19: not found on remote, deleted
+%client/d20/f20: not found on remote, deleted
+%client/d20: not found on remote, deleted
+%client/d21/f21: not found on remote, deleted
+%client/d21: not found on remote, deleted
+%client/d22/f22: not found on remote, deleted
+%client/d22: not found on remote, deleted
+%client/d23/f23: not found on remote, deleted
+%client/d23: not found on remote, deleted
+%client/d24/f24: not found on remote, deleted
+%client/d24: not found on remote, deleted
+%client/d25/f25: not found on remote, deleted
+%client/d25: not found on remote, deleted
+%client/d26/f26: not found on remote, deleted
+%client/d26: not found on remote, deleted
+%client/d27/f27: not found on remote, deleted
+%client/d27: not found on remote, deleted
+%client/d28/f28: not found on remote, deleted
+%client/d28: not found on remote, deleted
+%client/d29/f29: not found on remote, deleted
+%client/d29: not found on remote, deleted
+%client/d30/f30: not found on remote, deleted
+%client/d30: not found on remote, deleted
+%client/d31/f31: not found on remote, deleted
+%client/d31: not found on remote, deleted
+%client/d32/f32: not found on remote, deleted
+%client/d32: not found on remote, deleted
+%client/d33/f33: not found on remote, deleted
+%client/d33: not found on remote, deleted
+%client/d34/f34: not found on remote, deleted
+%client/d34: not found on remote, deleted
+%client/d35/f35: not found on remote, deleted
+%client/d35: not found on remote, deleted
+%client/d36/f36: not found on remote, deleted
+%client/d36: not found on remote, deleted
+%client/d37/f37: not found on remote, deleted
+%client/d37: not found on remote, deleted
+%client/d38/f38: not found on remote, deleted
+%client/d38: not found on remote, deleted
+%client/d39/f39: not found on remote, deleted
+%client/d39: not found on remote, deleted
+--- ftpcopy has no file descriptor leak in download
+%client/d00/f00: download successful
+%client/d01/f01: download successful
+%client/d02/f02: download successful
+%client/d03/f03: download successful
+%client/d04/f04: download successful
+%client/d05/f05: download successful
+%client/d06/f06: download successful
+%client/d07/f07: download successful
+%client/d08/f08: download successful
+%client/d09/f09: download successful
+%client/d10/f10: download successful
+%client/d11/f11: download successful
+%client/d12/f12: download successful
+%client/d13/f13: download successful
+%client/d14/f14: download successful
+%client/d15/f15: download successful
+%client/d16/f16: download successful
+%client/d17/f17: download successful
+%client/d18/f18: download successful
+%client/d19/f19: download successful
+%client/d20/f20: download successful
+%client/d21/f21: download successful
+%client/d22/f22: download successful
+%client/d23/f23: download successful
+%client/d24/f24: download successful
+%client/d25/f25: download successful
+%client/d26/f26: download successful
+%client/d27/f27: download successful
+%client/d28/f28: download successful
+%client/d29/f29: download successful
+%client/d30/f30: download successful
+%client/d31/f31: download successful
+%client/d32/f32: download successful
+%client/d33/f33: download successful
+%client/d34/f34: download successful
+%client/d35/f35: download successful
+%client/d36/f36: download successful
+%client/d37/f37: download successful
+%client/d38/f38: download successful
+%client/d39/f39: download successful
+--- ftpcopy --max-deletes works
+6
+5
+--- ftpcopy --max-size works
+client
+client/3
+client
+client/1
+client/2
+client/3
+--- ftpcopy --ascii-listings works
+- part one: binary mode listing
+client
+client/1
+client/2
+client/3
+client/D
+client/D/1
+client/D/2
+client/D/3
+client/D/D
+client/D/D/1
+client/D/D/2
+client/D/D/3
+client/1 ok
+client/2 ok
+client/3 ok
+client/D/1 ok
+client/D/2 ok
+client/D/3 ok
+client/D/D/1 ok
+client/D/D/2 ok
+client/D/D/3 ok
+- part two: ascii mode listing
+client
+client/1
+client/2
+client/3
+client/D
+client/D/1
+client/D/2
+client/D/3
+client/D/D
+client/D/D/1
+client/D/D/2
+client/D/D/3
+client/1 ok
+client/2 ok
+client/3 ok
+client/D/1 ok
+client/D/2 ok
+client/D/3 ok
+client/D/D/1 ok
+client/D/D/2 ok
+client/D/D/3 ok
+--- ftpcopy --max-depth works
+- part zero: --max-depth 0
+client
+client/1
+- part one: --max-depth 1
+client
+client/1
+client/D1
+client/D1/2
+- part two: --max-depth 2
+client
+client/1
+client/D1
+client/D1/2
+client/D1/D2
+client/D1/D2/3
+- part three: --max-depth 3
+client
+client/1
+client/D1
+client/D1/2
+client/D1/D2
+client/D1/D2/3
+client/D1/D2/D3
+client/D1/D2/D3/4
+--- ftpcopy --rate-limit works
+--- ftpcopy resumes downloads
+%client/file: restarting at 24576
+%client/file: download successful
+--- ftpcopy resume does not detect local corruption
+%client/file: restarting at 24578
+%client/file: download successful
+file corrupted - resume done
+--- ftpcopy does not resume in case time changed
+%client/file: download successful
+--- ftpcopy does not resume in case size changed
+%client/file: download successful
+--- ftpcopy --no-resume works as expected
+%client/file: download successful
